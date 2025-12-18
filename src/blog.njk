@@ -1,0 +1,27 @@
+---
+layout: base.njk
+title: Blog
+permalink: /blog/
+---
+
+<section class="blog-index">
+    <div class="section-header">
+        <h1 class="section-title">Thoughts</h1>
+        <p class="section-subtitle">Ideas, reflections, and writings</p>
+    </div>
+
+    <div class="thoughts-section">
+        {% for post in collections.posts %}
+        <article class="thought-post">
+            <div class="thought-meta">
+                <span>📅 {{ post.date | readableDate }}</span>
+                <span>•</span>
+                <span>{{ post.templateContent | readingTime }}</span>
+            </div>
+            <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
+            <p>{{ post.data.description or (post.templateContent | striptags | excerpt) }}</p>
+            <a href="{{ post.url }}" class="read-more">Read more →</a>
+        </article>
+        {% endfor %}
+    </div>
+</section>

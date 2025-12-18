@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} - {% endif %}Your Name</title>
+    <meta name="description" content="{{ description or 'Personal website and blog of Your Name' }}">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="{{ title or 'Your Name' }}">
+    <meta property="og:description" content="{{ description or 'Personal website and blog' }}">
+    <meta property="og:type" content="{% if layout == 'post.njk' %}article{% else %}website{% endif %}">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Your Name's Blog" href="/feed.xml">
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="logo"><a href="/">YN</a></div>
+            <ul>
+                <li>
+                    <a href="/#who">Who</a>
+                    <div class="dropdown">
+                        <a href="/#bio">Bio</a>
+                        <a href="/#interests">Interests</a>
+                        <a href="/#philosophy">Philosophy</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="/#what">What</a>
+                    <div class="dropdown">
+                        <a href="/#skills">Skills</a>
+                        <a href="/#projects">Projects</a>
+                        <a href="/#services">Services</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="/#when">When</a>
+                    <div class="dropdown">
+                        <a href="/#timeline">Timeline</a>
+                        <a href="/#milestones">Milestones</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="/#where">Where</a>
+                    <div class="dropdown">
+                        <a href="/#locations">Locations</a>
+                        <a href="/#travel">Travel</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="/#why">Why</a>
+                    <div class="dropdown">
+                        <a href="/#mission">Mission</a>
+                        <a href="/#values">Values</a>
+                    </div>
+                </li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="/#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        {{ content | safe }}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Your Name. Built with curiosity and care.</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>
