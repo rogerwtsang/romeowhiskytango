@@ -9,6 +9,7 @@ from src.models.baserunning import create_empty_bases, advance_runners
 from src.models.stolen_bases import check_steal_opportunities
 from src.models.sacrifice_fly import check_sacrifice_fly
 from src.engine.pa_generator import PAOutcomeGenerator
+from src.models.errors import check_error_advances_runner
 import config
 
 
@@ -67,6 +68,15 @@ def simulate_half_inning(
             # If caught stealing resulted in 3rd out, inning over
             if outs >= 3:
                 break
+
+        # Check for errors/wild pitches during PA
+        if config.ENABLE_ERRORS_WILD_PITCHES:
+            bases_after_error, error_runs = check_error_advances_runner(
+                bases, pa_generator.rng
+            )
+            if error_runs > 0 or bases_after_error != bases:
+                runs += error_runs
+                bases = bases_after_error
 
         # Get current batter
         batter = lineup[batter_idx]

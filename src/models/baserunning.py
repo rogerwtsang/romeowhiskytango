@@ -33,7 +33,7 @@ def advance_runners(
 ) -> Tuple[BasesState, int]:
     """Advance runners based on hit type using deterministic or probabilistic rules.
 
-    Conservative deterministic rules (defaultJ):
+    Conservative deterministic rules (default):
     - Walk: forced advancement only
     - Single: everyone advances 1 base
     - Double: batter to 2nd, runner from 1st to 3rd, runners from 2nd/3rd score

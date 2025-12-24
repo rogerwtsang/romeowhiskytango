@@ -81,5 +81,10 @@ MIN_PA_FOR_INCLUSION = 100  # Minimum PAs to use player stats
 # Output configuration
 VERBOSITY = 1  # 0=silent, 1=progress, 2=debug
 
-FLYOUT_PERCENTAGE = 0.35  # 35% of outs are fly balls
+# Hit distribution Bayesian smoothing parameters
+MIN_HITS_FOR_ACTUAL_DIST = 100  # Minimum hits to use player's actual distribution without smoothing
+BAYESIAN_PRIOR_WEIGHT = 100  # Equivalent sample size for league average prior
 
+# Errors and wild pitches
+ENABLE_ERRORS_WILD_PITCHES = True
+ERROR_RATE_PER_PA = 0.015  # ~1.5% of PAs result in error/WP/PB that advances runners

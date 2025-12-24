@@ -3,23 +3,77 @@
 # ============================================================================
 """Probability calculations for PA outcomes."""
 
-from typing import Dict, Tuple
-import numpy as np
+from typing import Dict, Tuple, Optional
 import config
+from src.models.player import Player
 
 
-def calculate_hit_distribution(iso: float) -> Dict[str, float]:
-    """Calculate hit type distribution based on ISO using parametric model.
+def calculate_hit_distribution(
+    player: Player,
+    league_avg_dist: Optional[Dict[str, float]] = None,
+    min_hits_threshold: int = 100
+) -> Dict[str, float]:
+    """Calculate hit type distribution using actual counts with Bayesian smoothing.
 
-    Uses linear interpolation between predefined hitter profiles based on ISO.
+    Uses player's actual hit counts when available. For players with few hits,
+    blends with league average using Bayesian updating.
 
     Args:
-        iso: Isolated power (SLG - BA)
+        player: Player object with hit count data
+        league_avg_dist: League average distribution (fallback)
+        min_hits_threshold: Minimum hits to trust player data without smoothing
 
     Returns:
         Dictionary with probabilities for each hit type given a hit occurred.
         Keys: '1B', '2B', '3B', 'HR'
     """
+    # Use config league average if not provided
+    if league_avg_dist is None:
+        league_avg_dist = config.LEAGUE_AVG_HIT_DISTRIBUTION
+
+    # Check if player has actual hit counts
+    if (player.singles is not None and
+        player.doubles is not None and
+        player.triples is not None and
+        player.hr is not None):
+
+        # Calculate total hits
+        total_hits = player.singles + player.doubles + player.triples + player.hr
+
+        if total_hits == 0:
+            # No hits - use league average
+            return league_avg_dist.copy()
+
+        # Calculate actual distribution
+        actual_dist = {
+            '1B': player.singles / total_hits,
+            '2B': player.doubles / total_hits,
+            '3B': player.triples / total_hits,
+            'HR': player.hr / total_hits
+        }
+
+        # Apply Bayesian smoothing for small samples
+        if total_hits < min_hits_threshold:
+            # Prior equivalent sample size
+            prior_weight = 100
+            player_weight = total_hits
+
+            smoothed_dist = {}
+            for ht in ['1B', '2B', '3B', 'HR']:
+                smoothed_dist[ht] = (
+                    (league_avg_dist[ht] * prior_weight +
+                     actual_dist[ht] * player_weight)
+                    / (prior_weight + player_weight)
+                )
+
+            return smoothed_dist
+
+        # Enough data - use actual distribution
+        return actual_dist
+
+    # No count data - fall back to ISO-based estimation (Option A)
+    iso = player.iso
+
     iso_low = config.ISO_THRESHOLDS['low']
     iso_med = config.ISO_THRESHOLDS['medium']
 
@@ -28,14 +82,10 @@ def calculate_hit_distribution(iso: float) -> Dict[str, float]:
     power_profile = config.HIT_DISTRIBUTIONS['power_hitter']
 
     if iso < iso_low:
-        # Singles hitter - use singles profile
         return singles_profile.copy()
 
-    elif iso < iso_med:
-        # Interpolate between singles and balanced
-        # Weight: 0 at iso_low (pure singles), 1 at iso_med (pure balanced)
+    if iso < iso_med:
         weight = (iso - iso_low) / (iso_med - iso_low)
-
         return {
             '1B': singles_profile['1B'] * (1 - weight) + balanced_profile['1B'] * weight,
             '2B': singles_profile['2B'] * (1 - weight) + balanced_profile['2B'] * weight,
@@ -43,38 +93,42 @@ def calculate_hit_distribution(iso: float) -> Dict[str, float]:
             'HR': singles_profile['HR'] * (1 - weight) + balanced_profile['HR'] * weight
         }
 
-    else:
-        # Interpolate between balanced and power
-        # Weight: 0 at iso_med (pure balanced), 1 at iso_med+0.200 (pure power)
-        # Cap weight at 1.0 for very high ISO
-        weight = min(1.0, (iso - iso_med) / 0.200)
-
-        return {
-            '1B': balanced_profile['1B'] * (1 - weight) + power_profile['1B'] * weight,
-            '2B': balanced_profile['2B'] * (1 - weight) + power_profile['2B'] * weight,
-            '3B': balanced_profile['3B'] * (1 - weight) + power_profile['3B'] * weight,
-            'HR': balanced_profile['HR'] * (1 - weight) + power_profile['HR'] * weight
-        }
+    weight = min(1.0, (iso - iso_med) / 0.200)
+    return {
+        '1B': balanced_profile['1B'] * (1 - weight) + power_profile['1B'] * weight,
+        '2B': balanced_profile['2B'] * (1 - weight) + power_profile['2B'] * weight,
+        '3B': balanced_profile['3B'] * (1 - weight) + power_profile['3B'] * weight,
+        'HR': balanced_profile['HR'] * (1 - weight) + power_profile['HR'] * weight
+    }
 
 
-def decompose_slash_line(ba: float, obp: float, slg: float) -> Tuple[Dict[str, float], Dict[str, float]]:
+def decompose_slash_line(
+    ba: float,
+    obp: float,
+    slg: float,
+    player: Optional[Player] = None
+) -> Tuple[Dict[str, float], Dict[str, float]]:
     """Convert slash line statistics to PA outcome probabilities.
 
     Args:
         ba: Batting average
         obp: On-base percentage
         slg: Slugging percentage
+        player: Optional Player object (for actual hit counts)
 
     Returns:
-        Tuple of (pa_probs, hit_dist) where:
-        - pa_probs: Dict with keys 'OUT', 'WALK', 'SINGLE', 'DOUBLE', 'TRIPLE', 'HR'
-        - hit_dist: Dict with keys '1B', '2B', '3B', 'HR' (conditional on hit)
+        Tuple of (pa_probs, hit_dist)
     """
     # Calculate ISO
     iso = slg - ba
 
-    # Get hit type distribution based on ISO
-    hit_dist = calculate_hit_distribution(iso)
+    # Get hit type distribution
+    if player is not None:
+        hit_dist = calculate_hit_distribution(player)
+    else:
+        # Create temporary player object for ISO-based calculation
+        temp_player = Player("temp", ba, obp, slg, iso, 0)
+        hit_dist = calculate_hit_distribution(temp_player)
 
     # Basic PA outcome probabilities
     p_out = 1.0 - obp

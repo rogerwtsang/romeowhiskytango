@@ -33,11 +33,8 @@ def create_player_from_stats(row: pd.Series) -> Player:
     doubles = int(row['doubles']) if 'doubles' in row and pd.notna(row['doubles']) else None
     triples = int(row['triples']) if 'triples' in row and pd.notna(row['triples']) else None
     hr = int(row['hr']) if 'hr' in row and pd.notna(row['hr']) else None
-    
-    # Calculate probabilities
-    pa_probs, hit_dist = decompose_slash_line(ba, obp, slg)
-    
-    # Create player object
+
+    # Create player object first (without probabilities)
     player = Player(
         name=name,
         ba=ba,
@@ -50,11 +47,16 @@ def create_player_from_stats(row: pd.Series) -> Player:
         triples=triples,
         hr=hr,
         sb=sb,
-        cs=cs,
-        pa_probs=pa_probs,
-        hit_dist=hit_dist
+        cs=cs
     )
-    
+
+    # Calculate probabilities (now passing player object)
+    pa_probs, hit_dist = decompose_slash_line(ba, obp, slg, player)
+
+    # Update player with probabilities
+    player.pa_probs = pa_probs
+    player.hit_dist = hit_dist
+
     return player
 
 

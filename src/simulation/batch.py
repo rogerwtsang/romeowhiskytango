@@ -3,7 +3,7 @@
 # ============================================================================
 """Batch simulation runner."""
 
-from typing import List, Dict
+from typing import List, Dict, Callable, Optional
 import numpy as np
 from src.models.player import Player
 from src.simulation.season import simulate_season
@@ -16,7 +16,8 @@ def run_simulations(
     n_iterations: int = config.N_SIMULATIONS,
     n_games: int = config.N_GAMES_PER_SEASON,
     random_seed: int = config.RANDOM_SEED,
-    verbose: int = config.VERBOSITY
+    verbose: int = config.VERBOSITY,
+    progress_callback: Optional[Callable[[int, int], None]] = None
 ) -> Dict:
     """Run multiple season simulations and aggregate results.
 
@@ -26,6 +27,7 @@ def run_simulations(
         n_games: Games per season
         random_seed: Random seed for reproducibility
         verbose: Verbosity level (0=silent, 1=progress, 2=debug)
+        progress_callback: Optional callback function(current, total) for progress updates
 
     Returns:
         Dictionary with aggregated statistics across all simulations
@@ -64,6 +66,10 @@ def run_simulations(
         if verbose >= 1 and (i + 1) in progress_points:
             pct = ((i + 1) / n_iterations) * 100
             print(f"  Progress: {i+1:,}/{n_iterations:,} ({pct:.0f}%)")
+
+        # Call progress callback if provided (every 100 iterations)
+        if progress_callback and (i % 100 == 0 or i == n_iterations - 1):
+            progress_callback(i + 1, n_iterations)
 
     if verbose >= 1:
         print("\nSimulation complete!\n")
