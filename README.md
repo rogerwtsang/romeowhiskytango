@@ -4,6 +4,12 @@ A Monte Carlo simulation framework for analyzing baseball lineup optimization us
 
 ## 🆕 What's New
 
+**Validation Track Complete** (December 2024):
+- ✅ **Model Validated**: 1.6% error on 2024 Dodgers (855 simulated vs 842 actual)
+- ✅ **Roster Consistency Analyzer**: Identify stable teams for validation
+- ✅ **Validation Framework**: Complete workflow to test model accuracy
+- ✅ **4 Validation Scripts**: Automated analysis, dataset prep, simulation, and suite runner
+
 **Sprint 1 Complete** (December 2024):
 - ✅ **Results Manager**: Store up to 10 simulation results in memory for comparison
 - ✅ **Save Results Button**: Save lineups with custom names from the Run tab

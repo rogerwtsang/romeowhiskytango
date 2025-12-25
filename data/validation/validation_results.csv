@@ -1,0 +1,2 @@
+team,season,n_iterations,simulated_mean,simulated_median,simulated_std,simulated_ci_low,simulated_ci_high,actual_runs,error,error_pct,within_95ci,actual_percentile
+LAD,2024,1000,855.4,855.0,42.6,772.0,936.0,842,13.4,1.59,True,39.4
