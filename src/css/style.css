@@ -6,17 +6,17 @@
 :root {
     /* Leather Pride Flag Colors */
     --bg-black: #1a1a1a;
-    --bg-blue: #1e3a5f;
+    --bg-blue: #11116b;
     --bg-white: #f5f5f5;
     --bg-card-dark: rgba(36, 36, 36, 0.95);
     --bg-card-light: rgba(255, 255, 255, 0.95);
 
-    --text-primary: #e0e0e0;
+    --text-primary: #cd0000;
     --text-secondary: #999;
     --text-tertiary: #666;
     --text-on-white: #2a2a2a;
 
-    --accent-red: #c41e3a;
+    --accent-red: #11116b;
     --accent-red-hover: #a01828;
     
     /* Spacing */
