@@ -1,7 +1,7 @@
 {
   "name": "website",
   "version": "1.0.0",
-  "description": "Personal website and blog",
+  "description": "personal website and blog",
   "scripts": {
     "start": "eleventy --serve",
     "build": "eleventy"
