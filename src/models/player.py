@@ -4,7 +4,10 @@
 """Player data representation."""
 
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .position import FieldingPosition
 
 
 @dataclass
@@ -24,7 +27,7 @@ class Player:
         hr: Number of home runs (if available)
         sb: Stolen bases (if available)
         cs: Caught stealing (if available)
-        position: Defensive position (if available)
+        position: Fielding position (FieldingPosition object)
         pa_probs: Calculated probabilities for each PA outcome
         hit_dist: Distribution of hit types given a hit occurred
     """
@@ -45,8 +48,8 @@ class Player:
     sb: Optional[int] = None
     cs: Optional[int] = None
 
-    # Position
-    position: Optional[str] = None
+    # Fielding position (FieldingPosition object, not just a string)
+    position: Optional['FieldingPosition'] = None
 
     # Calculated probabilities
     pa_probs: Optional[Dict[str, float]] = None
@@ -56,3 +59,18 @@ class Player:
         """Calculate ISO if not provided."""
         if self.iso is None:
             self.iso = self.slg - self.ba
+
+    @property
+    def position_abbrev(self) -> Optional[str]:
+        """Get position abbreviation (e.g., 'SS', '1B')."""
+        return self.position.abbrev if self.position else None
+
+    @property
+    def position_code(self) -> Optional[int]:
+        """Get position code (1-10)."""
+        return self.position.code if self.position else None
+
+    @property
+    def position_type(self) -> Optional[str]:
+        """Get position type (Catcher, Infielder, Outfielder, etc.)."""
+        return self.position.type if self.position else None

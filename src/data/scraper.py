@@ -1,13 +1,30 @@
-"""Data acquisition using pybaseball."""
+"""Data acquisition using pybaseball and MLB Stats API."""
 
 import pandas as pd
 from typing import Optional, List, Dict
 import pybaseball as pyb
 from pybaseball import batting_stats, team_batting, playerid_lookup, statcast_batter
 
+try:
+    import statsapi
+    STATSAPI_AVAILABLE = True
+except ImportError:
+    STATSAPI_AVAILABLE = False
+
 
 # Enable cache to avoid repeated API calls
 pyb.cache.enable()
+
+
+# MLB Team ID mapping (for statsapi)
+MLB_TEAM_IDS = {
+    'ARI': 109, 'ATL': 144, 'BAL': 110, 'BOS': 111, 'CHC': 112,
+    'CIN': 113, 'CLE': 114, 'COL': 115, 'CWS': 145, 'DET': 116,
+    'HOU': 117, 'KC': 118, 'LAA': 108, 'LAD': 119, 'MIA': 146,
+    'MIL': 158, 'MIN': 142, 'NYM': 121, 'NYY': 147, 'OAK': 133,
+    'PHI': 143, 'PIT': 134, 'SD': 135, 'SEA': 136, 'SF': 137,
+    'STL': 138, 'TB': 139, 'TEX': 140, 'TOR': 141, 'WSH': 120,
+}
 
 
 def get_team_batting_stats(team: str, season: int) -> pd.DataFrame:
@@ -237,6 +254,144 @@ def load_data(filename: str, data_type: str = 'raw') -> pd.DataFrame:
     df = pd.read_csv(path)
     print(f"Loaded data from {path}")
     return df
+
+
+def get_team_roster_positions(team: str, season: int) -> Dict[str, Dict]:
+    """Fetch fielding position data for a team's roster from MLB Stats API.
+
+    Args:
+        team: Team abbreviation (e.g., 'TOR')
+        season: Season year
+
+    Returns:
+        Dictionary mapping player names to position info:
+        {
+            'Vladimir Guerrero Jr.': {
+                'position_code': 3,
+                'position_abbrev': '1B',
+                'position_name': 'First Baseman',
+                'position_type': 'Infielder',
+                'mlb_id': 665489
+            },
+            ...
+        }
+
+    Raises:
+        ImportError: If statsapi is not installed
+        ValueError: If team code is not recognized
+    """
+    if not STATSAPI_AVAILABLE:
+        raise ImportError(
+            "MLB-StatsAPI package not installed. "
+            "Install with: pip install MLB-StatsAPI"
+        )
+
+    team_upper = team.upper()
+    if team_upper not in MLB_TEAM_IDS:
+        raise ValueError(f"Unknown team code: {team}. Valid codes: {list(MLB_TEAM_IDS.keys())}")
+
+    team_id = MLB_TEAM_IDS[team_upper]
+    print(f"Fetching {season} roster positions for {team} (team_id={team_id})...")
+
+    try:
+        roster_data = statsapi.get(
+            'team_roster',
+            {'teamId': team_id, 'rosterType': 'fullSeason', 'season': season}
+        )
+    except Exception as e:
+        print(f"Warning: Could not fetch roster for {season}, trying active roster...")
+        roster_data = statsapi.get(
+            'team_roster',
+            {'teamId': team_id, 'rosterType': 'active'}
+        )
+
+    positions = {}
+    for entry in roster_data.get('roster', []):
+        person = entry.get('person', {})
+        position = entry.get('position', {})
+
+        player_name = person.get('fullName')
+        if not player_name:
+            continue
+
+        positions[player_name] = {
+            'position_code': int(position.get('code', 0)) if position.get('code', '').isdigit() else None,
+            'position_abbrev': position.get('abbreviation'),
+            'position_name': position.get('name'),
+            'position_type': position.get('type'),
+            'mlb_id': person.get('id'),
+        }
+
+    print(f"Found position data for {len(positions)} players")
+    return positions
+
+
+def merge_batting_with_positions(batting_df: pd.DataFrame, team: str, season: int) -> pd.DataFrame:
+    """Merge batting statistics with position data.
+
+    Args:
+        batting_df: DataFrame with batting stats (must have 'Name' or 'name' column)
+        team: Team abbreviation
+        season: Season year
+
+    Returns:
+        DataFrame with added position columns:
+        - position_code: int (1-10)
+        - position_abbrev: str (C, 1B, SS, etc.)
+        - position_name: str (Catcher, First Baseman, etc.)
+        - position_type: str (Catcher, Infielder, Outfielder, etc.)
+    """
+    # Get position data
+    try:
+        positions = get_team_roster_positions(team, season)
+    except (ImportError, Exception) as e:
+        print(f"Warning: Could not fetch position data: {e}")
+        print("Proceeding without position information.")
+        batting_df['position_code'] = None
+        batting_df['position_abbrev'] = None
+        batting_df['position_name'] = None
+        batting_df['position_type'] = None
+        return batting_df
+
+    # Determine name column
+    name_col = 'Name' if 'Name' in batting_df.columns else 'name'
+
+    # Create position columns
+    batting_df = batting_df.copy()
+    batting_df['position_code'] = None
+    batting_df['position_abbrev'] = None
+    batting_df['position_name'] = None
+    batting_df['position_type'] = None
+
+    # Match players by name
+    matched = 0
+    for idx, row in batting_df.iterrows():
+        player_name = row[name_col]
+
+        # Try exact match first
+        if player_name in positions:
+            pos_info = positions[player_name]
+            batting_df.at[idx, 'position_code'] = pos_info['position_code']
+            batting_df.at[idx, 'position_abbrev'] = pos_info['position_abbrev']
+            batting_df.at[idx, 'position_name'] = pos_info['position_name']
+            batting_df.at[idx, 'position_type'] = pos_info['position_type']
+            matched += 1
+            continue
+
+        # Try fuzzy match (partial name matching)
+        for roster_name, pos_info in positions.items():
+            # Check if either name contains the other (handles Jr., accents, etc.)
+            if (player_name.lower() in roster_name.lower() or
+                roster_name.lower() in player_name.lower()):
+                batting_df.at[idx, 'position_code'] = pos_info['position_code']
+                batting_df.at[idx, 'position_abbrev'] = pos_info['position_abbrev']
+                batting_df.at[idx, 'position_name'] = pos_info['position_name']
+                batting_df.at[idx, 'position_type'] = pos_info['position_type']
+                matched += 1
+                break
+
+    print(f"Matched position data for {matched}/{len(batting_df)} players")
+    return batting_df
 
 
 if __name__ == "__main__":

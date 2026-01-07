@@ -3,16 +3,21 @@
 import pandas as pd
 from typing import List, Optional
 from src.models.player import Player
+from src.models.position import parse_position, FieldingPosition
 from src.models.probability import decompose_slash_line
 import config
 
 
 def create_player_from_stats(row: pd.Series) -> Player:
     """Create a Player object from a DataFrame row with statistics.
-    
+
     Args:
-        row: pandas Series with player statistics
-        
+        row: pandas Series with player statistics.
+              Position can be provided as:
+              - 'position_abbrev': string like 'SS', '1B', 'CF'
+              - 'position_code': int like 6, 3, 8
+              - 'position': legacy field (string or int)
+
     Returns:
         Player object with calculated probabilities
     """
@@ -27,13 +32,25 @@ def create_player_from_stats(row: pd.Series) -> Player:
     # Extract stolen base counts if available
     sb = int(row['sb']) if 'sb' in row and pd.notna(row['sb']) else None
     cs = int(row['cs']) if 'cs' in row and pd.notna(row['cs']) else None
-    
+
     # Extract hit counts if available
     singles = int(row['singles']) if 'singles' in row and pd.notna(row['singles']) else None
     doubles = int(row['doubles']) if 'doubles' in row and pd.notna(row['doubles']) else None
     triples = int(row['triples']) if 'triples' in row and pd.notna(row['triples']) else None
     hr = int(row['hr']) if 'hr' in row and pd.notna(row['hr']) else None
-    position = row['position'] if 'position' in row and pd.notna(row['position']) else None
+
+    # Extract fielding position - try multiple column formats
+    position: Optional[FieldingPosition] = None
+
+    # Preferred: position_abbrev (e.g., 'SS', '1B')
+    if 'position_abbrev' in row and pd.notna(row['position_abbrev']):
+        position = parse_position(row['position_abbrev'])
+    # Alternative: position_code (e.g., 6, 3)
+    elif 'position_code' in row and pd.notna(row['position_code']):
+        position = parse_position(int(row['position_code']))
+    # Legacy: position field (string or int)
+    elif 'position' in row and pd.notna(row['position']):
+        position = parse_position(row['position'])
 
     # Create player object first (without probabilities)
     player = Player(
@@ -144,28 +161,29 @@ def get_lineup_by_stat(df: pd.DataFrame, stat: str = 'ops', ascending: bool = Fa
 
 def print_lineup(lineup: List[Player]):
     """Print lineup information in readable format.
-    
+
     Args:
         lineup: List of Player objects
     """
-    print("\n" + "="*80)
+    print("\n" + "="*90)
     print("LINEUP")
-    print("="*80)
-    print(f"{'Pos':<4} {'Name':<25} {'BA':>6} {'OBP':>6} {'SLG':>6} {'ISO':>6} {'PA':>5}")
-    print("-"*80)
-    
+    print("="*90)
+    print(f"{'#':<3} {'Fld':<4} {'Name':<25} {'BA':>6} {'OBP':>6} {'SLG':>6} {'ISO':>6} {'PA':>5}")
+    print("-"*90)
+
     for i, player in enumerate(lineup, 1):
-        print(f"{i:<4} {player.name:<25} {player.ba:>6.3f} {player.obp:>6.3f} "
+        pos_str = player.position_abbrev if player.position_abbrev else '--'
+        print(f"{i:<3} {pos_str:<4} {player.name:<25} {player.ba:>6.3f} {player.obp:>6.3f} "
               f"{player.slg:>6.3f} {player.iso:>6.3f} {player.pa:>5}")
     
     # Team totals
     avg_ba = sum(p.ba for p in lineup) / len(lineup)
     avg_obp = sum(p.obp for p in lineup) / len(lineup)
     avg_slg = sum(p.slg for p in lineup) / len(lineup)
-    
-    print("-"*80)
-    print(f"{'AVG':<4} {'':<25} {avg_ba:>6.3f} {avg_obp:>6.3f} {avg_slg:>6.3f}")
-    print("="*80)
+
+    print("-"*90)
+    print(f"{'AVG':<3} {'':<4} {'':<25} {avg_ba:>6.3f} {avg_obp:>6.3f} {avg_slg:>6.3f}")
+    print("="*90)
 
 
 if __name__ == "__main__":
