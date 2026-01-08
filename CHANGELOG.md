@@ -11,6 +11,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Automated lineup optimization engine (Sprint 4-5)
 - Enhanced visualizations: violin plots (Sprint 6)
 
+## [0.4.1] - 2025-01-07
+
+### Added - Strikeout Rate Modeling
+**Player-specific strikeout rates now integrated into simulation**
+
+- **K% Data Integration** (`src/data/scraper.py`):
+  - Added `K%` to columns extracted from FanGraphs
+  - Strikeout rate now included in prepared CSV files
+
+- **Player Model Update** (`src/models/player.py`):
+  - Added `k_pct: Optional[float]` field to Player dataclass
+  - Stores strikeout rate as decimal (e.g., 0.220 = 22%)
+
+- **Probability Decomposition** (`src/models/probability.py`):
+  - `decompose_slash_line()` now accepts `k_pct` parameter
+  - Splits outs into STRIKEOUT vs balls-in-play OUT
+  - Uses `DEFAULT_K_PCT` (22%) when player data unavailable
+
+- **PA Outcome Generator** (`src/engine/pa_generator.py`):
+  - Added 'STRIKEOUT' to outcome types
+  - Now generates 7 outcomes: OUT, STRIKEOUT, WALK, SINGLE, DOUBLE, TRIPLE, HR
+
+- **Inning Simulation** (`src/engine/inning.py`):
+  - STRIKEOUT handled separately from OUT
+  - Strikeouts cannot produce sacrifice flies (no ball in play)
+
+- **Configuration** (`config.py`):
+  - Added `DEFAULT_K_PCT = 0.220` (league average ~22%)
+  - Updated `FLYOUT_PERCENTAGE` comment for clarity
+
+### Changed
+- Re-scraped 2025 Blue Jays data now includes k_pct column
+- Sacrifice fly logic now correctly excludes strikeouts
+
+### Technical Notes
+- Probability math: `p_strikeout = k_pct`, `p_out = (1 - OBP) - k_pct`
+- All probabilities still sum to 1.0
+- Sample K% values: Springer 18.9%, Kirk 11.7%, Guerrero Jr. 13.8%
+
 ## [0.4.0] - 2025-01-07
 
 ### Added - Sprint 2: Compare & Analyze Tab

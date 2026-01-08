@@ -106,7 +106,8 @@ def decompose_slash_line(
     ba: float,
     obp: float,
     slg: float,
-    player: Optional[Player] = None
+    player: Optional[Player] = None,
+    k_pct: Optional[float] = None
 ) -> Tuple[Dict[str, float], Dict[str, float]]:
     """Convert slash line statistics to PA outcome probabilities.
 
@@ -115,6 +116,7 @@ def decompose_slash_line(
         obp: On-base percentage
         slg: Slugging percentage
         player: Optional Player object (for actual hit counts)
+        k_pct: Optional strikeout rate (as decimal, e.g., 0.220 = 22%)
 
     Returns:
         Tuple of (pa_probs, hit_dist)
@@ -131,13 +133,30 @@ def decompose_slash_line(
         hit_dist = calculate_hit_distribution(temp_player)
 
     # Basic PA outcome probabilities
-    p_out = 1.0 - obp
     p_walk = obp - ba
     p_hit = ba
+    p_total_outs = 1.0 - obp
+
+    # Split outs into strikeouts and balls-in-play outs
+    if k_pct is not None:
+        p_strikeout = k_pct
+        p_out = p_total_outs - k_pct
+        # Ensure p_out doesn't go negative (can happen with extreme K%)
+        if p_out < 0:
+            p_out = 0.0
+            p_strikeout = p_total_outs
+    else:
+        # Use default league average if no k_pct provided
+        p_strikeout = config.DEFAULT_K_PCT
+        p_out = p_total_outs - p_strikeout
+        if p_out < 0:
+            p_out = 0.0
+            p_strikeout = p_total_outs
 
     # Distribute hits into specific types
     pa_probs = {
         'OUT': p_out,
+        'STRIKEOUT': p_strikeout,
         'WALK': p_walk,
         'SINGLE': p_hit * hit_dist['1B'],
         'DOUBLE': p_hit * hit_dist['2B'],

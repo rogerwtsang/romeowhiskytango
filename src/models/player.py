@@ -48,6 +48,9 @@ class Player:
     sb: Optional[int] = None
     cs: Optional[int] = None
 
+    # Strikeout rate (as decimal, e.g., 0.220 = 22%)
+    k_pct: Optional[float] = None
+
     # Fielding position (FieldingPosition object, not just a string)
     position: Optional['FieldingPosition'] = None
 

@@ -87,7 +87,7 @@ def simulate_half_inning(
 
         # Handle outcome
         if outcome == 'OUT':
-            # Check for sacrifice fly
+            # Ball-in-play out - check for sacrifice fly
             bases_after_sf, sf_runs, is_sf = check_sacrifice_fly(bases, outs, pa_generator.rng)
 
             if is_sf:
@@ -95,6 +95,10 @@ def simulate_half_inning(
                 runs += sf_runs
                 bases = bases_after_sf
 
+            outs += 1
+
+        elif outcome == 'STRIKEOUT':
+            # Strikeout - no sacrifice fly possible (no ball in play)
             outs += 1
 
         else:

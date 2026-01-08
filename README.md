@@ -4,6 +4,11 @@ A Monte Carlo simulation framework for analyzing baseball lineup optimization us
 
 ## 🆕 What's New
 
+**Strikeout Rate Modeling** (January 2025):
+- ✅ **K% Integration**: Player strikeout rates now loaded from FanGraphs data
+- ✅ **Distinct Outcome**: STRIKEOUT is separate from OUT (balls in play)
+- ✅ **Accurate Sac Fly Logic**: Strikeouts cannot produce sacrifice flies
+
 **Validation Track Complete** (December 2024):
 - ✅ **Model Validated**: 1.6% error on 2024 Dodgers (855 simulated vs 842 actual)
 - ✅ **Roster Consistency Analyzer**: Identify stable teams for validation
@@ -25,10 +30,11 @@ This project implements a Monte Carlo simulator to model baseball team performan
 
 #### Simulation Engine
 - Player performance modeling from slash line statistics (BA/OBP/SLG)
+- **Strikeout rate modeling** with player-specific K% from FanGraphs
 - Bayesian-smoothed hit type distribution (1B/2B/3B/HR)
 - Probabilistic base-running with configurable aggression
 - Stolen base modeling with player-specific SB/CS rates
-- Sacrifice fly simulation
+- Sacrifice fly simulation (excludes strikeouts - no ball in play)
 - Error and wild pitch advancement
 - Full season simulation (configurable 1-162 games)
 
@@ -230,6 +236,7 @@ The project follows a modular architecture:
 ### Future Enhancements
 
 **Model Improvements**:
+- [x] Strikeout rate modeling (K% per player) - Complete
 - [ ] Opponent/pitching integration for win/loss tracking
 - [ ] Platoon splits (L/R batter-pitcher matchups)
 - [ ] Situational hitting (count-based outcomes)

@@ -24,13 +24,13 @@ class PAOutcomeGenerator:
             game_state: Optional game state (unused for now, for future enhancement)
             
         Returns:
-            Outcome string: 'OUT', 'WALK', 'SINGLE', 'DOUBLE', 'TRIPLE', or 'HR'
+            Outcome string: 'OUT', 'STRIKEOUT', 'WALK', 'SINGLE', 'DOUBLE', 'TRIPLE', or 'HR'
         """
         # Get probabilities from player
         probs = player.pa_probs
-        
+
         # Create cumulative probability distribution
-        outcomes = ['OUT', 'WALK', 'SINGLE', 'DOUBLE', 'TRIPLE', 'HR']
+        outcomes = ['OUT', 'STRIKEOUT', 'WALK', 'SINGLE', 'DOUBLE', 'TRIPLE', 'HR']
         cum_probs = np.cumsum([probs[outcome] for outcome in outcomes])
         
         # Generate random number and find outcome
@@ -88,6 +88,7 @@ if __name__ == "__main__":
     
     outcomes_count = {
         'OUT': 0,
+        'STRIKEOUT': 0,
         'WALK': 0,
         'SINGLE': 0,
         'DOUBLE': 0,

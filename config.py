@@ -21,7 +21,10 @@ MIN_SB_ATTEMPTS_FOR_RATE = 5
 SB_ATTEMPT_SCALE = 1.0
 
 # Sacrifice fly parameters
-FLYOUT_PERCENTAGE = 0.35 # Percentage of outs that are fly balls (vs ground outs, strikeouts)
+FLYOUT_PERCENTAGE = 0.35  # Percentage of balls-in-play outs that are fly balls (vs ground outs)
+
+# Strikeout parameters
+DEFAULT_K_PCT = 0.220  # League average strikeout rate (~22%)
 
 # Probabilistic base-running parameters
 # Probability that runner advances extra base on hits

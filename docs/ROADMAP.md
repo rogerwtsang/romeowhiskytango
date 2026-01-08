@@ -9,6 +9,7 @@
 | Results Manager | Complete | 0.2.0 |
 | Model Validation | Complete | 0.3.0 |
 | Compare Tab | Complete | 0.4.0 |
+| Strikeout Rate Modeling | Complete | 0.4.1 |
 | Lineup Optimization | Planned | - |
 
 ---
@@ -34,6 +35,12 @@
 - [x] Summary Cards with baseline difference
 - [x] Distribution histograms (overlaid)
 - [x] Effect size analysis (Cohen's d)
+
+### Model Enhancement: Strikeout Rate (Complete)
+- [x] **K% Integration**: Player strikeout rates loaded from FanGraphs data
+- [x] **STRIKEOUT Outcome**: Separate from OUT (balls in play)
+- [x] **Accurate Sac Fly Logic**: Strikeouts cannot produce sacrifice flies
+- [x] Files modified: `scraper.py`, `player.py`, `probability.py`, `pa_generator.py`, `inning.py`, `processor.py`, `config.py`
 
 ---
 
@@ -204,6 +211,7 @@ OPT_MAX_CACHE_SIZE = 10000
 ## Future Enhancements (Post-Sprint 7)
 
 ### Model Improvements
+- [x] **Strikeout rate modeling** (K% per player) - Complete in v0.4.1
 - [ ] Opponent/pitching integration for win/loss tracking
 - [ ] Platoon splits (L/R batter-pitcher matchups)
 - [ ] Situational hitting (count-based outcomes)
@@ -238,4 +246,4 @@ OPT_MAX_CACHE_SIZE = 10000
 
 ---
 
-*Last updated: 2025-01-07*
+*Last updated: 2025-01-07 (v0.4.1 - Strikeout Rate Modeling)*

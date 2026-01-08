@@ -39,6 +39,9 @@ def create_player_from_stats(row: pd.Series) -> Player:
     triples = int(row['triples']) if 'triples' in row and pd.notna(row['triples']) else None
     hr = int(row['hr']) if 'hr' in row and pd.notna(row['hr']) else None
 
+    # Extract strikeout rate if available
+    k_pct = float(row['k_pct']) if 'k_pct' in row and pd.notna(row['k_pct']) else None
+
     # Extract fielding position - try multiple column formats
     position: Optional[FieldingPosition] = None
 
@@ -66,11 +69,12 @@ def create_player_from_stats(row: pd.Series) -> Player:
         hr=hr,
         sb=sb,
         cs=cs,
+        k_pct=k_pct,
         position=position
     )
 
-    # Calculate probabilities (now passing player object)
-    pa_probs, hit_dist = decompose_slash_line(ba, obp, slg, player)
+    # Calculate probabilities (now passing player object with k_pct)
+    pa_probs, hit_dist = decompose_slash_line(ba, obp, slg, player, k_pct)
 
     # Update player with probabilities
     player.pa_probs = pa_probs

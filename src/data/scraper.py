@@ -198,7 +198,8 @@ def prepare_player_stats(df: pd.DataFrame, min_pa: int = 100) -> pd.DataFrame:
         '3B': 'triples',
         'HR': 'hr',
         'SB': 'sb',
-        'CS': 'cs'
+        'CS': 'cs',
+        'K%': 'k_pct'
     }
 
     # Check which columns exist
