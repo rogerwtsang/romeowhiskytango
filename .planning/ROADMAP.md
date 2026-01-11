@@ -23,13 +23,11 @@ None
 **Goal**: Fix all mypy errors so simulation doesn't crash on edge cases
 **Depends on**: Nothing (first phase)
 **Research**: Unlikely (internal code fixes, established patterns)
-**Plans**: TBD
+**Plans**: 2 plans
 
-Key files from ANALYSIS_NOTES.md:
-- `pa_generator.py:34` — None indexing crash
-- `baserunning.py:101,122,131` — rng.random() on Optional
-- `batch.py:78-83,153-158` — list/ndarray confusion (12 errors)
-- `constraint_validator.py` — None comparison errors (6 errors)
+Plans:
+- [ ] 01-01: Critical path fixes (pa_generator, baserunning, batch, constraint_validator)
+- [ ] 01-02: Medium priority fixes (position, processor, sacrifice_fly, stolen_bases)
 
 ### Phase 2: Statistical Robustness
 **Goal**: Improve model accuracy with proper Bayesian treatment and documentation
@@ -88,7 +86,7 @@ Items:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Type Safety | 0/TBD | Not started | - |
+| 1. Type Safety | 0/2 | Not started | - |
 | 2. Statistical Robustness | 0/TBD | Not started | - |
 | 3. GUI Foundation | 0/TBD | Not started | - |
 | 4. Results Visualization | 0/TBD | Not started | - |
