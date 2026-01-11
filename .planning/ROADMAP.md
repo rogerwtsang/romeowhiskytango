@@ -1,0 +1,96 @@
+# Roadmap: Monte Carlo Baseball Simulator
+
+## Overview
+
+Clean up the existing simulation model for robustness, then redesign the GUI from 9 fragmented tabs into a streamlined dashboard that communicates simulation insights at a glance. Finish with comprehensive test coverage.
+
+## Domain Expertise
+
+None
+
+## Phases
+
+- [ ] **Phase 1: Type Safety** - Fix 30+ critical type errors preventing crashes
+- [ ] **Phase 2: Statistical Robustness** - Add Bayesian shrinkage, K% warning, documentation
+- [ ] **Phase 3: GUI Foundation** - Consolidate 9 tabs into focused dashboard structure
+- [ ] **Phase 4: Results Visualization** - Charts and metrics that communicate at a glance
+- [ ] **Phase 5: Workflow Polish** - Reduce clicks, clean visual hierarchy
+- [ ] **Phase 6: Test Coverage** - Implement 19 stubs + integration tests
+
+## Phase Details
+
+### Phase 1: Type Safety
+**Goal**: Fix all mypy errors so simulation doesn't crash on edge cases
+**Depends on**: Nothing (first phase)
+**Research**: Unlikely (internal code fixes, established patterns)
+**Plans**: TBD
+
+Key files from ANALYSIS_NOTES.md:
+- `pa_generator.py:34` — None indexing crash
+- `baserunning.py:101,122,131` — rng.random() on Optional
+- `batch.py:78-83,153-158` — list/ndarray confusion (12 errors)
+- `constraint_validator.py` — None comparison errors (6 errors)
+
+### Phase 2: Statistical Robustness
+**Goal**: Improve model accuracy with proper Bayesian treatment and documentation
+**Depends on**: Phase 1
+**Research**: Unlikely (fixes documented in ANALYSIS_NOTES.md)
+**Plans**: TBD
+
+Items:
+- Add beta-binomial shrinkage to stolen base success rate
+- Add warning when K% is clamped due to exceeding total outs
+- Document empirical sources for hit distribution constants
+- Add player-speed modifier to baserunning aggression
+
+### Phase 3: GUI Foundation
+**Goal**: Replace 9-tab structure with consolidated dashboard layout
+**Depends on**: Phase 2
+**Research**: Likely (dashboard layout patterns for Tkinter)
+**Research topics**: Tkinter dashboard patterns, card-based layouts, ttk theming
+**Plans**: TBD
+
+Current tabs to consolidate:
+- Setup, Lineup, Distribution, Errors, Baserunning, Run, Results, Compare, History
+- Target: 3-4 focused views (Setup/Lineup, Run/Results, Compare, Settings)
+
+### Phase 4: Results Visualization
+**Goal**: Charts and metrics that communicate simulation insights at a glance
+**Depends on**: Phase 3
+**Research**: Likely (charting libraries for Tkinter)
+**Research topics**: matplotlib embedding in Tkinter, interactive charts, statistical visualizations
+**Plans**: TBD
+
+Core value delivery: Visual clarity — results easy to understand at a glance
+
+### Phase 5: Workflow Polish
+**Goal**: Reduce clicks to run simulation, clean visual hierarchy
+**Depends on**: Phase 4
+**Research**: Unlikely (internal UI refinement)
+**Plans**: TBD
+
+Focus:
+- Streamline build → run → compare workflow
+- Proper spacing and typography
+- Consistent visual language
+
+### Phase 6: Test Coverage
+**Goal**: Comprehensive test suite for simulation pipeline
+**Depends on**: Phase 5
+**Research**: Unlikely (standard pytest patterns)
+**Plans**: TBD
+
+Items:
+- Implement 19 stubbed pytest functions
+- Add integration tests for simulation pipeline
+
+## Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Type Safety | 0/TBD | Not started | - |
+| 2. Statistical Robustness | 0/TBD | Not started | - |
+| 3. GUI Foundation | 0/TBD | Not started | - |
+| 4. Results Visualization | 0/TBD | Not started | - |
+| 5. Workflow Polish | 0/TBD | Not started | - |
+| 6. Test Coverage | 0/TBD | Not started | - |
