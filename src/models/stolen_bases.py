@@ -236,11 +236,11 @@ if __name__ == "__main__":
     for player in [speedster, average_runner, slow_player]:
         attempts = 0
         successes = 0
-        
+
         for _ in range(1000):
             if should_attempt_steal(player, 'first', 1, rng):
                 attempts += 1
-                _, success, caught = attempt_stolen_base(
+                bases_result, success, was_caught = attempt_stolen_base(
                     player, 'first',
                     {'first': player, 'second': None, 'third': None},
                     rng
@@ -259,27 +259,27 @@ if __name__ == "__main__":
     
     # Test full steal opportunity check
     print("--- Testing check_steal_opportunities ---\n")
-    
-    bases = {
+
+    bases: BasesState = {
         'first': speedster,
         'second': None,
         'third': None
     }
-    
+
     print("Initial: Runner on 1st (Speedster)")
-    
+
     steals = 0
-    caught = 0
-    
+    caught_stealing = 0
+
     for _ in range(100):
         bases_after, outs = check_steal_opportunities(bases, 1, rng)
-        
+
         if bases_after['second'] == speedster:
             steals += 1
         elif outs == 1:
-            caught += 1
+            caught_stealing += 1
     
-    print(f"  100 opportunities: {steals} successful steals, {caught} caught stealing")
+    print(f"  100 opportunities: {steals} successful steals, {caught_stealing} caught stealing")
     
     print("\n" + "="*60)
     print("✓ Stolen base module tests complete")
