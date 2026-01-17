@@ -45,6 +45,9 @@ Recent decisions affecting current work:
 - Fix type errors before statistical improvements
 - Use BasesState type alias instead of Dict[str, Optional[Player]] for better type inference
 - Rename variables to avoid shadowing instead of using type: ignore comments
+- Use assert statements after validation checks to narrow types for mypy
+- Use separate variable names (_arr suffix) for numpy arrays vs original lists
+- Add explicit None checks before arithmetic operations on optional values
 
 ### Deferred Issues
 
@@ -57,6 +60,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-17
-Stopped at: Completed Phase 1 (Type Safety) - both plans executed successfully
+Last session: 2026-01-17 18:16:09
+Stopped at: Re-executed 01-01-PLAN.md successfully
 Resume file: None
