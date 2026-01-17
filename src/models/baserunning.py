@@ -63,6 +63,10 @@ def advance_runners(
     if use_probabilistic and rng is None:
         raise ValueError("RNG required when ENABLE_PROBABILISTIC_BASERUNNING is True")
 
+    # Help mypy understand rng is not None when probabilistic is enabled
+    if use_probabilistic:
+        assert rng is not None  # Already validated above
+
     if hit_type == 'OUT':
         # No advancement, runners stay
         bases_after = bases_before.copy()
@@ -98,11 +102,16 @@ def advance_runners(
 
         # Runner from 1st: deterministic=2nd, probabilistic=sometimes 3rd
         if bases_before['first'] is not None:
-            if use_probabilistic and rng.random() < config.BASERUNNING_AGGRESSION['single_1st_to_3rd']:
-                # Aggressive: 1st to 3rd
-                if bases_after['third'] is None: # Only if 3rd is open
-                    bases_after['third'] = bases_before['first']
+            if use_probabilistic:
+                assert rng is not None  # Already validated above
+                if rng.random() < config.BASERUNNING_AGGRESSION['single_1st_to_3rd']:
+                    # Aggressive: 1st to 3rd
+                    if bases_after['third'] is None: # Only if 3rd is open
+                        bases_after['third'] = bases_before['first']
+                    else:
+                        bases_after['second'] = bases_before['first']
                 else:
+                    # Conservative: 1st to 2nd
                     bases_after['second'] = bases_before['first']
             else:
                 # Conservative: 1st to 2nd
@@ -119,6 +128,7 @@ def advance_runners(
         # Runner from 2nd: almost always scores
         if bases_before['second'] is not None:
             if use_probabilistic:
+                assert rng is not None  # Already validated above
                 if rng.random() < config.BASERUNNING_AGGRESSION['double_2nd_scores']:
                     runs_scored += 1
                 else:
@@ -128,9 +138,14 @@ def advance_runners(
 
         # Runner from 1st: deterministic=3rd, probabilistic=sometimes scores
         if bases_before['first'] is not None:
-            if use_probabilistic and rng.random() < config.BASERUNNING_AGGRESSION['double_1st_scores']:
-                # Aggressive: scores from 1st
-                runs_scored += 1
+            if use_probabilistic:
+                assert rng is not None  # Already validated above
+                if rng.random() < config.BASERUNNING_AGGRESSION['double_1st_scores']:
+                    # Aggressive: scores from 1st
+                    runs_scored += 1
+                else:
+                    # Conservative: 1st to 3rd
+                    bases_after['third'] = bases_before['first']
             else:
                 # Conservative: 1st to 3rd
                 bases_after['third'] = bases_before['first']
