@@ -11,7 +11,7 @@ None
 ## Phases
 
 - [x] **Phase 1: Type Safety** - Fix 30+ critical type errors preventing crashes
-- [ ] **Phase 2: Statistical Robustness** - Add Bayesian shrinkage, K% warning, documentation
+- [ ] **Phase 2: Statistical Robustness** - Audit model assumptions and document findings
 - [ ] **Phase 3: GUI Foundation** - Consolidate 9 tabs into focused dashboard structure
 - [ ] **Phase 4: Results Visualization** - Charts and metrics that communicate at a glance
 - [ ] **Phase 5: Workflow Polish** - Reduce clicks, clean visual hierarchy
@@ -30,16 +30,14 @@ Plans:
 - [x] 01-02: Medium priority fixes (position, processor, sacrifice_fly, stolen_bases)
 
 ### Phase 2: Statistical Robustness
-**Goal**: Improve model accuracy with proper Bayesian treatment and documentation
+**Goal**: Audit statistical assumptions and document findings to inform future refinements
 **Depends on**: Phase 1
-**Research**: Unlikely (fixes documented in ANALYSIS_NOTES.md)
-**Plans**: TBD
+**Research**: Unlikely (audit of existing code documented in ANALYSIS_NOTES.md)
+**Plans**: 2 plans
 
-Items:
-- Add beta-binomial shrinkage to stolen base success rate
-- Add warning when K% is clamped due to exceeding total outs
-- Document empirical sources for hit distribution constants
-- Add player-speed modifier to baserunning aggression
+Plans:
+- [ ] 02-01-PLAN.md — Audit probability decomposition and hit distribution modeling
+- [ ] 02-02-PLAN.md — Audit baserunning and special events, finalize findings document
 
 ### Phase 3: GUI Foundation
 **Goal**: Replace 9-tab structure with consolidated dashboard layout
@@ -87,7 +85,7 @@ Items:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Type Safety | 2/2 | ✓ Complete | 2026-01-17 |
-| 2. Statistical Robustness | 0/TBD | Not started | - |
+| 2. Statistical Robustness | 0/2 | Not started | - |
 | 3. GUI Foundation | 0/TBD | Not started | - |
 | 4. Results Visualization | 0/TBD | Not started | - |
 | 5. Workflow Polish | 0/TBD | Not started | - |
