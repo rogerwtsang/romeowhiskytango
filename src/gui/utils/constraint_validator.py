@@ -28,6 +28,9 @@ class ConstraintValidator:
             if player not in roster:
                 return False, f"Player '{player}' not in roster"
 
+            if position is None:
+                return False, "Constraint missing 'position' field"
+
             if position < 1 or position > 9:
                 return False, f"Position must be 1-9, got {position}"
 
@@ -65,6 +68,9 @@ class ConstraintValidator:
 
             if player_a not in roster or player_b not in roster:
                 return False, f"Players not in roster"
+
+            if position is None:
+                return False, "Constraint missing 'position' field"
 
             if position < 1 or position > 9:
                 return False, f"Position must be 1-9"
@@ -125,15 +131,20 @@ class ConstraintValidator:
         for constraint in constraints:
             if constraint.get('type') == 'fixed_position':
                 player = constraint.get('player')
-                position = constraint.get('position') - 1  # Convert to 0-based
+                position = constraint.get('position')
 
-                if player in roster and 0 <= position < 9:
+                if position is None:
+                    continue  # Skip invalid constraint
+
+                position_idx = position - 1  # Convert to 0-based
+
+                if player in roster and 0 <= position_idx < 9:
                     # Remove player from current position if present
                     if player in result:
                         result[result.index(player)] = None
 
                     # Place player at fixed position
-                    result[position] = player
+                    result[position_idx] = player
 
         # Apply platoon constraints (exclude one player from roster if both present)
         for constraint in constraints:
