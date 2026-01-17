@@ -18,16 +18,18 @@ class PAOutcomeGenerator:
     
     def generate_outcome(self, player: Player, game_state: Optional[dict] = None) -> str:
         """Generate a plate appearance outcome for a player.
-        
+
         Args:
             player: Player object with calculated probabilities
             game_state: Optional game state (unused for now, for future enhancement)
-            
+
         Returns:
             Outcome string: 'OUT', 'STRIKEOUT', 'WALK', 'SINGLE', 'DOUBLE', 'TRIPLE', or 'HR'
         """
         # Get probabilities from player
         probs = player.pa_probs
+        if probs is None:
+            raise ValueError(f"Player '{player.name}' has no PA probabilities calculated")
 
         # Create cumulative probability distribution
         outcomes = ['OUT', 'STRIKEOUT', 'WALK', 'SINGLE', 'DOUBLE', 'TRIPLE', 'HR']
