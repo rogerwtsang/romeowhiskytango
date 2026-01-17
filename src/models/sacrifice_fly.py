@@ -71,27 +71,27 @@ if __name__ == "__main__":
     
     # Test 1: No runner on 3rd
     print("Test 1: No runner on 3rd")
-    bases = {'first': None, 'second': None, 'third': None}
-    bases_after, runs, is_sf = check_sacrifice_fly(bases, 1, rng)
+    bases_empty: BasesState = {'first': None, 'second': None, 'third': None}
+    bases_after, runs, is_sf = check_sacrifice_fly(bases_empty, 1, rng)
     print(f"  Result: runs={runs}, is_sac_fly={is_sf}")
     assert runs == 0 and not is_sf
     print("  ✓ Passed\n")
-    
+
     # Test 2: Runner on 3rd, 2 outs (shouldn't sac fly)
     print("Test 2: Runner on 3rd, 2 outs")
-    bases = {'first': None, 'second': None, 'third': runner}
-    bases_after, runs, is_sf = check_sacrifice_fly(bases, 2, rng)
+    bases_third: BasesState = {'first': None, 'second': None, 'third': runner}
+    bases_after, runs, is_sf = check_sacrifice_fly(bases_third, 2, rng)
     print(f"  Result: runs={runs}, is_sac_fly={is_sf}")
     assert runs == 0 and not is_sf
     print("  ✓ Passed\n")
-    
+
     # Test 3: Multiple trials with runner on 3rd
     print("Test 3: 1000 outs with runner on 3rd, 1 out")
-    bases = {'first': None, 'second': None, 'third': runner}
-    
+    bases_test: BasesState = {'first': None, 'second': None, 'third': runner}
+
     sac_flies = 0
     for _ in range(1000):
-        _, runs, is_sf = check_sacrifice_fly(bases, 1, rng)
+        bases_result, runs, is_sf = check_sacrifice_fly(bases_test, 1, rng)
         if is_sf:
             sac_flies += 1
     
