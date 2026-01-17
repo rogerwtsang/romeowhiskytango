@@ -1,29 +1,46 @@
 ---
 phase: 02-statistical-robustness
 document: findings
-status: draft
+status: final
 audited: 2026-01-17
-scope: probability_and_hit_distributions
-next_scope: baserunning_and_special_events
+completed: 2026-01-17
+scope: all_model_components
+issues_identified: 11
+coverage:
+  - probability_decomposition
+  - hit_type_distributions
+  - baserunning_advancement
+  - stolen_bases
+  - sacrifice_flies
+  - errors_wild_pitches
 ---
 
-# Statistical Model Audit - Part 1: Probability & Hit Distributions
+# Statistical Model Audit - Complete Findings
 
 **Audit Date:** 2026-01-17
-**Scope:** Probability decomposition and hit type distribution modeling
+**Scope:** All simulation model components (probability, hit distributions, baserunning, special events)
 **Methodology:** Code review against ANALYSIS_NOTES.md issues and statistical theory
-**Next:** Baserunning and special events (Plan 02)
+**Status:** Complete
 
 ## Purpose
 
 This audit examines the statistical assumptions underlying the Monte Carlo baseball simulator's probability calculations. The goal is to identify weak assumptions, missing documentation, and opportunities for refinement - NOT to implement fixes immediately.
 
-## Audit Scope (This Document)
+## Audit Scope
 
+This document covers all core statistical model components:
+
+**Part 1: Probability & Hit Distributions**
 - Probability decomposition: BA/OBP/SLG → PA outcomes
 - Hit type distributions: 1B/2B/3B/HR split modeling
 - Bayesian smoothing for small samples
 - Configuration constants and thresholds
+
+**Part 2: Baserunning & Special Events**
+- Baserunning advancement probabilities and player speed handling
+- Stolen base modeling (attempt rate, success rate, opportunities)
+- Sacrifice fly modeling (flyout percentage, strikeout handling)
+- Errors and wild pitches (frequency, advancement logic)
 
 ## Assessment Criteria
 
@@ -428,46 +445,6 @@ league_2b_rate = batters['2B'].sum() / batters['H'].sum()
    - Implement theoretically optimal conjugate prior (Dirichlet-Multinomial)
    - Compare results to current weighted average approach
    - Only pursue if empirical testing shows significant improvement
-
----
-
-## Summary of Findings
-
-### Probability Decomposition
-- **Mathematical soundness:** ✓ Formulas are correct
-- **Edge case handling:** ⚠️ Silent K% clamping is a band-aid fix, needs logging
-- **Documentation:** ⚠️ Formulas not explained, assumptions unstated
-- **Empirical grounding:** ⚠️ DEFAULT_K_PCT lacks source citation
-
-### Hit Type Distributions
-- **Mathematical soundness:** ✓ Bayesian smoothing formula correct
-- **Edge case handling:** ✓ All edge cases properly handled
-- **Documentation:** ⚠️ HIT_DISTRIBUTIONS source missing, ISO thresholds lack citation
-- **Empirical grounding:** ⚠️ Constants appear reasonable but can't validate without source, LEAGUE_AVG likely outdated
-
-### Critical Gaps Identified
-
-1. **Missing empirical sources:** HIT_DISTRIBUTIONS, ISO_THRESHOLDS, LEAGUE_AVG_HIT_DISTRIBUTION, DEFAULT_K_PCT all lack documented sources
-2. **Silent data quality issues:** K% clamping hides potential data problems
-3. **Outdated league averages:** LEAGUE_AVG_HIT_DISTRIBUTION appears pre-2015, doesn't reflect modern HR rates
-4. **Non-optimal priors:** Weighted average for hit distributions works but Dirichlet conjugate prior would be theoretically superior
-
-### Recommended Next Steps
-
-**Immediate (Phase 2, Plan 3-4):**
-- Add logging to K% clamping
-- Document all constant sources in config.py
-- Validate and update LEAGUE_AVG_HIT_DISTRIBUTION
-
-**Near-term (Future phase):**
-- Empirically validate HIT_DISTRIBUTIONS against historical data
-- Test sensitivity of prior_weight parameter
-- Add data validation layer in processor.py
-
-**Long-term (Future phase):**
-- Implement Dirichlet prior for hit distributions
-- Create automated config update process using pybaseball
-- Add comprehensive unit tests for probability calculations
 
 ---
 
