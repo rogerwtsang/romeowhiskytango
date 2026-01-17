@@ -185,12 +185,18 @@ if __name__ == "__main__":
     print("Lookup by code:")
     for code in range(1, 11):
         pos = get_position_by_code(code)
-        print(f"  {code}: {pos.abbrev} - {pos.name} ({pos.type})")
+        if pos is not None:
+            print(f"  {code}: {pos.abbrev} - {pos.name} ({pos.type})")
+        else:
+            print(f"  {code}: Not found")
 
     print("\nLookup by abbreviation:")
     for abbrev in ['C', '1B', '2B', 'SS', '3B', 'LF', 'CF', 'RF', 'DH']:
         pos = get_position_by_abbrev(abbrev)
-        print(f"  {abbrev}: code={pos.code}, type={pos.type}")
+        if pos is not None:
+            print(f"  {abbrev}: code={pos.code}, type={pos.type}")
+        else:
+            print(f"  {abbrev}: Not found")
 
     print("\nPosition properties:")
     print(f"  SHORTSTOP.is_infielder: {SHORTSTOP.is_infielder}")

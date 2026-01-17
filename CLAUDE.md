@@ -2,9 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Overview
+
+Monte Carlo baseball simulator using Bayesian statistical methods to optimize batting order lineups. Built with Python 3.10+ (tested on 3.13), using pybaseball for data, numpy for stochastic modeling, and Tkinter for the GUI.
+
 ## Quick Reference
 
 ### Development Commands
+
+**Setup environment:**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
 **Run the GUI application:**
 ```bash
@@ -17,11 +28,13 @@ pytest                    # All tests
 pytest tests/             # Test directory only
 pytest -v                 # Verbose output
 pytest tests/baseball_mc_tests.py  # Single file
+pytest -k test_name       # Run specific test by name
 ```
 
 **Code quality:**
 ```bash
 ruff check .              # Linting
+ruff check --fix .        # Auto-fix linting issues
 black .                   # Auto-formatting
 mypy .                    # Type checking
 ```
@@ -62,6 +75,7 @@ This is a **Monte Carlo baseball simulator** using Bayesian statistical methods 
    - 9 tabs: Setup, Lineup, Baserunning, Errors, Distribution, Validation, Output, Run, Compare
    - `utils/simulation_runner.py`: Background thread execution with progress callbacks
    - `utils/results_manager.py`: In-memory cache (max 10 results) for comparison
+   - `utils/config_manager.py`: Persistent GUI configuration storage
 
 ### Critical Data Flow
 
@@ -112,6 +126,15 @@ All simulation parameters are centralized in `config.py`:
 **Optimization (future Sprint 4-5):**
 - `OPT_EXHAUSTIVE_THRESHOLD = 10`: Use exhaustive search when roster ≤ 10 players
 - `OPT_GA_*`: Genetic algorithm parameters (population size, generations, mutation rate)
+
+## Key Dependencies
+
+- `pybaseball>=2.2.7`: Baseball Reference data access
+- `numpy>=1.24.0`: Stochastic simulation with RandomState
+- `pandas>=2.0.0`: Data processing and manipulation
+- `scipy>=1.10.0`: Statistical functions (confidence intervals, effect sizes)
+- `matplotlib>=3.7.0`: Plotting and visualization
+- `tkinter`: GUI framework (included with Python)
 
 ## Coding Conventions
 
@@ -176,15 +199,18 @@ All simulation parameters are centralized in `config.py`:
 
 **Completed (v0.4.1):**
 - ✅ Core simulation engine with K% (strikeout rate) modeling
-- ✅ 8-tab GUI application
+- ✅ 9-tab GUI application (Setup, Lineup, Baserunning, Errors, Distribution, Validation, Output, Run, Compare)
 - ✅ Results Manager & Compare Tab
 - ✅ Model validated (1.6% error on 2024 Dodgers)
 
-**Active Development:**
+**Active Development (Phase 1):**
+Type safety improvements and architectural refinements. See `.planning/phases/01/` for current work.
+
+**Future Phases:**
 See `docs/ROADMAP.md` for full roadmap. Key upcoming work:
-- Sprint 3: Position-level tracking (batting order slot vs. fielding position)
-- Sprint 4-5: Lineup optimization (exhaustive search + genetic algorithm)
-- Sprint 6-7: Enhanced visualizations, Excel export, UI polish
+- Phase 2: Position-level tracking (batting order slot vs. fielding position)
+- Phase 3-4: Lineup optimization (exhaustive search + genetic algorithm)
+- Phase 5-6: Enhanced visualizations, Excel export, UI polish
 
 ## Special Notes
 
@@ -205,3 +231,11 @@ For deep architectural understanding, see `.planning/codebase/`:
 - `STRUCTURE.md`: Directory layout, file organization
 - `CONVENTIONS.md`: Naming patterns, code style, docstring format
 - `TESTING.md`: Test framework, patterns, coverage gaps
+- `CONCERNS.md`: Known issues and technical debt
+- `INTEGRATIONS.md`: External dependencies and data sources
+- `STACK.md`: Technology stack overview
+
+For current development work:
+- `.planning/PROJECT.md`: Project goals and research questions
+- `.planning/ROADMAP.md`: 6-phase development plan
+- `.planning/phases/01/`: Current phase (type safety) plans and tasks
