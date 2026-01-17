@@ -217,11 +217,17 @@ if __name__ == "__main__":
     sample = lineup[0]
     print(f"\n{sample.name}:")
     print("PA Outcomes:")
-    for outcome, prob in sample.pa_probs.items():
-        print(f"  {outcome}: {prob:.4f}")
+    if sample.pa_probs is not None:
+        for outcome, prob in sample.pa_probs.items():
+            print(f"  {outcome}: {prob:.4f}")
+    else:
+        print("  (No PA probabilities)")
     print("Hit Distribution:")
-    for hit_type, prob in sample.hit_dist.items():
-        print(f"  {hit_type}: {prob:.4f}")
+    if sample.hit_dist is not None:
+        for hit_type, prob in sample.hit_dist.items():
+            print(f"  {hit_type}: {prob:.4f}")
+    else:
+        print("  (No hit distribution)")
     
     # Test 2: Create lineup by OPS
     print("\n\n--- Test 2: Lineup by OPS (descending) ---")
