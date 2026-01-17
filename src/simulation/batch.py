@@ -75,12 +75,12 @@ def run_simulations(
         print("\nSimulation complete!\n")
 
     # Convert to numpy arrays for statistics
-    season_runs = np.array(season_runs)
-    season_hits = np.array(season_hits)
-    season_walks = np.array(season_walks)
-    season_sb = np.array(season_sb)
-    season_cs = np.array(season_cs)
-    season_sf = np.array(season_sf)
+    season_runs_arr = np.array(season_runs)
+    season_hits_arr = np.array(season_hits)
+    season_walks_arr = np.array(season_walks)
+    season_sb_arr = np.array(season_sb)
+    season_cs_arr = np.array(season_cs)
+    season_sf_arr = np.array(season_sf)
 
     # Calculate statistics
     summary = {
@@ -89,73 +89,73 @@ def run_simulations(
 
         # Run statistics
         'runs': {
-            'mean': float(np.mean(season_runs)),
-            'std': float(np.std(season_runs)),
-            'median': float(np.median(season_runs)),
-            'min': int(np.min(season_runs)),
-            'max': int(np.max(season_runs)),
+            'mean': float(np.mean(season_runs_arr)),
+            'std': float(np.std(season_runs_arr)),
+            'median': float(np.median(season_runs_arr)),
+            'min': int(np.min(season_runs_arr)),
+            'max': int(np.max(season_runs_arr)),
             'percentiles': {
-                '5th': float(np.percentile(season_runs, 5)),
-                '25th': float(np.percentile(season_runs, 25)),
-                '50th': float(np.percentile(season_runs, 50)),
-                '75th': float(np.percentile(season_runs, 75)),
-                '95th': float(np.percentile(season_runs, 95))
+                '5th': float(np.percentile(season_runs_arr, 5)),
+                '25th': float(np.percentile(season_runs_arr, 25)),
+                '50th': float(np.percentile(season_runs_arr, 50)),
+                '75th': float(np.percentile(season_runs_arr, 75)),
+                '95th': float(np.percentile(season_runs_arr, 95))
             },
             'ci_95': (
-                float(np.percentile(season_runs, 2.5)),
-                float(np.percentile(season_runs, 97.5))
+                float(np.percentile(season_runs_arr, 2.5)),
+                float(np.percentile(season_runs_arr, 97.5))
             )
         },
 
         # Hit statistics
         'hits': {
-            'mean': float(np.mean(season_hits)),
-            'std': float(np.std(season_hits)),
-            'median': float(np.median(season_hits))
+            'mean': float(np.mean(season_hits_arr)),
+            'std': float(np.std(season_hits_arr)),
+            'median': float(np.median(season_hits_arr))
         },
 
         # Walk statistics
         'walks': {
-            'mean': float(np.mean(season_walks)),
-            'std': float(np.std(season_walks)),
-            'median': float(np.median(season_walks))
+            'mean': float(np.mean(season_walks_arr)),
+            'std': float(np.std(season_walks_arr)),
+            'median': float(np.median(season_walks_arr))
         },
 
         # Stolen base statistics
         'stolen_bases': {
-            'mean': float(np.mean(season_sb)),
-            'std': float(np.std(season_sb)),
-            'median': float(np.median(season_sb))
+            'mean': float(np.mean(season_sb_arr)),
+            'std': float(np.std(season_sb_arr)),
+            'median': float(np.median(season_sb_arr))
         },
 
         'caught_stealing': {
-            'mean': float(np.mean(season_cs)),
-            'std': float(np.std(season_cs)),
-            'median': float(np.median(season_cs))
+            'mean': float(np.mean(season_cs_arr)),
+            'std': float(np.std(season_cs_arr)),
+            'median': float(np.median(season_cs_arr))
         },
 
         # Sacrifice fly statistics
         'sacrifice_flies': {
-            'mean': float(np.mean(season_sf)),
-            'std': float(np.std(season_sf)),
-            'median': float(np.median(season_sf))
+            'mean': float(np.mean(season_sf_arr)),
+            'std': float(np.std(season_sf_arr)),
+            'median': float(np.median(season_sf_arr))
         },
 
         # Derived statistics
         'runs_per_game': {
-            'mean': float(np.mean(season_runs) / n_games),
-            'std': float(np.std(season_runs) / n_games)
+            'mean': float(np.mean(season_runs_arr) / n_games),
+            'std': float(np.std(season_runs_arr) / n_games)
         }
     }
 
     # Store raw data for further analysis
     raw_data = {
-        'season_runs': season_runs.tolist(),
-        'season_hits': season_hits.tolist(),
-        'season_walks': season_walks.tolist(),
-        'season_sb': season_sb.tolist(),
-        'season_cs': season_cs.tolist(),
-        'season_sf': season_sf.tolist()
+        'season_runs': season_runs,
+        'season_hits': season_hits,
+        'season_walks': season_walks,
+        'season_sb': season_sb,
+        'season_cs': season_cs,
+        'season_sf': season_sf
     }
 
     return {
