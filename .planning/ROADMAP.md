@@ -44,11 +44,16 @@ Plans:
 **Depends on**: Phase 2
 **Research**: Likely (dashboard layout patterns for Tkinter)
 **Research topics**: Tkinter dashboard patterns, card-based layouts, ttk theming
-**Plans**: TBD
+**Plans**: 7 plans
 
-Current tabs to consolidate:
-- Setup, Lineup, Distribution, Errors, Baserunning, Run, Results, Compare, History
-- Target: 3-4 focused views (Setup/Lineup, Run/Results, Compare, Settings)
+Plans:
+- [ ] 03-01-PLAN.md — Create CollapsibleFrame widget foundation
+- [ ] 03-02-PLAN.md — Build SetupPanel with collapsible Assumptions subsection
+- [ ] 03-03-PLAN.md — Build LineupPanel with integrated Run controls
+- [ ] 03-04-PLAN.md — Build ResultsPanel with summary and collapsible details
+- [ ] 03-05-PLAN.md — Create MainDashboard container with compare mode
+- [ ] 03-06-PLAN.md — Add session persistence and startup restoration
+- [ ] 03-07-PLAN.md — Human verification of dashboard functionality
 
 ### Phase 4: Results Visualization
 **Goal**: Charts and metrics that communicate simulation insights at a glance
@@ -86,7 +91,7 @@ Items:
 |-------|----------------|--------|-----------|
 | 1. Type Safety | 2/2 | ✓ Complete | 2026-01-17 |
 | 2. Statistical Robustness | 0/2 | Not started | - |
-| 3. GUI Foundation | 0/TBD | Not started | - |
+| 3. GUI Foundation | 0/7 | Not started | - |
 | 4. Results Visualization | 0/TBD | Not started | - |
 | 5. Workflow Polish | 0/TBD | Not started | - |
 | 6. Test Coverage | 0/TBD | Not started | - |
