@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-10)
 
 **Core value:** Visual clarity — simulation results must be easy to understand at a glance
-**Current focus:** Phase 2 — Statistical Robustness
+**Current focus:** Phase 3 — GUI Foundation
 
 ## Current Position
 
-Phase: 2 of 6 (Statistical Robustness)
-Plan: 2 of 2
-Status: Phase complete
-Last activity: 2026-01-17 — Completed 02-02-PLAN.md
+Phase: 3 of 6 (GUI Foundation)
+Plan: 1 of 3
+Status: In progress
+Last activity: 2026-01-19 — Completed 03-01-PLAN.md
 
-Progress: ████████░░ 80%
+Progress: ████████░░ 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 4.0 min
-- Total execution time: 0.27 hours
+- Total plans completed: 5
+- Average duration: 3.4 min
+- Total execution time: 0.30 hours
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: ████████░░ 80%
 |-------|-------|-------|----------|
 | 01-type-safety | 2/2 | 8 min | 4 min |
 | 02-statistical-robustness | 2/2 | 9 min | 4.5 min |
+| 03-gui-foundation | 1/3 | 1 min | 1 min |
 
 **Recent Trend:**
-- Last 3 plans: 4 min, 3 min, 6 min
-- Trend: Consistent execution speed (~4 min average)
+- Last 3 plans: 3 min, 6 min, 1 min
+- Trend: Fast execution on widget creation (~1 min for simple tasks)
 
 ## Accumulated Context
 
@@ -57,6 +58,8 @@ Recent decisions affecting current work:
 - Player speed modulation via SB attempt rate proxy recommended over uniform baserunning probabilities
 - LEAGUE_AVG_HIT_DISTRIBUTION identified as outdated (5% HR vs modern 10-13%), needs update with pybaseball
 - Documentation gaps prioritized as medium priority - critical for maintainability but lower impact than statistical fixes
+- Use direct button.config(text=...) instead of StringVar to avoid memory leaks (RESEARCH.md Pitfall 2)
+- Store section text as instance variable (_text) for consistent toggle behavior in CollapsibleFrame
 
 ### Deferred Issues
 
@@ -74,6 +77,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-17 21:24:43
-Stopped at: Completed 02-02-PLAN.md (Phase 2 complete)
+Last session: 2026-01-19 00:10:11
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
