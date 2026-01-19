@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-10)
 ## Current Position
 
 Phase: 3 of 6 (GUI Foundation)
-Plan: 2 of 3
-Status: In progress
-Last activity: 2026-01-19 — Completed 03-02-PLAN.md
+Plan: 3 of 3
+Status: Phase complete
+Last activity: 2026-01-19 — Completed 03-05-PLAN.md
 
-Progress: ████████░░ 83%
+Progress: █████████░ 88%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 3.2 min
-- Total execution time: 0.32 hours
+- Total plans completed: 7
+- Average duration: 3.1 min
+- Total execution time: 0.36 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: ████████░░ 83%
 |-------|-------|-------|----------|
 | 01-type-safety | 2/2 | 8 min | 4 min |
 | 02-statistical-robustness | 2/2 | 9 min | 4.5 min |
-| 03-gui-foundation | 2/3 | 4 min | 2 min |
+| 03-gui-foundation | 3/3 | 7 min | 2.3 min |
 
 **Recent Trend:**
-- Last 3 plans: 6 min, 1 min, 3 min
-- Trend: Fast execution on widget/panel creation (1-3 min per plan)
+- Last 3 plans: 1 min, 3 min, 3 min
+- Trend: Consistently fast execution on GUI dashboard plans (2-3 min per plan)
 
 ## Accumulated Context
 
@@ -71,6 +71,12 @@ Recent decisions affecting current work:
 - Consolidated 4 separate tabs (Setup, Baserunning, Errors, Distribution) into single SetupPanel
 - Used grid geometry manager throughout SetupPanel instead of pack for responsive layout
 - Placed Assumptions in CollapsibleFrame to allow users to hide when not needed
+- MainDashboard uses nested PanedWindows (vertical main, horizontal content) for 3-section resizable layout
+- Compare mode limited to exactly 2 lineups (not N) for simpler state management
+- First lineup panel gets Compare button, second does not (prevents infinite toggle)
+- Widget destruction follows forget() → destroy() → list.remove() pattern to prevent memory leaks
+- Lambda callbacks with panel reference enable same handler for multiple panels
+- Result normalization layer transforms run_simulations() output to ResultsPanel standard format
 
 ### Deferred Issues
 
@@ -88,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-19 00:15:47
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-01-19 12:35:29
+Stopped at: Completed 03-05-PLAN.md (Phase 3 complete)
 Resume file: None
