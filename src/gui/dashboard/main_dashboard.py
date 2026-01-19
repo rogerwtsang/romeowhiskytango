@@ -57,6 +57,7 @@ class MainDashboard(ttk.Frame):
         self.team_data = None
 
         self._create_layout()
+        self._prompt_session_restore()
 
     def _create_layout(self):
         """Create main dashboard layout with PanedWindow structure."""
@@ -255,12 +256,63 @@ class MainDashboard(ttk.Frame):
             Dictionary containing:
                 - setup_collapsed: Whether setup panel is collapsed
                 - compare_mode: Whether compare mode is active
-                - lineup_data: List of lineup data from each panel
+                - lineup_panels: List of lineup data from each panel
+                - paned_positions: Sash positions for resizable panes
         """
         state = {
             'setup_collapsed': self.setup_panel.assumptions_frame.collapsed,
             'compare_mode': self.compare_mode,
-            'lineup_data': [panel.get_lineup_data() for panel in self.lineup_panels]
+            'lineup_panels': [panel.get_lineup_data() for panel in self.lineup_panels],
+            'paned_positions': {
+                'main_vertical': self.main_paned.sashpos(0),
+                'content_horizontal': self.content_paned.sashpos(0)
+            }
         }
 
         return state
+
+    def save_session(self):
+        """Save current dashboard state to session file."""
+        state = self.get_dashboard_state()
+        self.config_manager.save_session(state)
+
+    def _prompt_session_restore(self):
+        """Prompt user to restore last session if one exists."""
+        if self.config_manager.session_exists():
+            restore = messagebox.askyesno(
+                "Restore Session",
+                "Restore your last session?",
+                parent=self
+            )
+            if restore:
+                self._restore_session()
+
+    def _restore_session(self):
+        """Restore dashboard state from saved session."""
+        state = self.config_manager.load_session()
+
+        if state is None:
+            return
+
+        # Restore setup panel collapse state
+        if state.get('setup_collapsed'):
+            # Only toggle if currently expanded
+            if not self.setup_panel.assumptions_frame.collapsed:
+                self.setup_panel.assumptions_frame.toggle()
+
+        # Restore compare mode
+        if state.get('compare_mode') and not self.compare_mode:
+            self.toggle_compare_mode()
+
+        # Restore lineup data
+        lineup_data = state.get('lineup_panels', [])
+        for i, data in enumerate(lineup_data):
+            if i < len(self.lineup_panels):
+                self.lineup_panels[i].set_lineup_data(data)
+
+        # Restore paned positions
+        positions = state.get('paned_positions', {})
+        if 'main_vertical' in positions:
+            self.main_paned.sashpos(0, positions['main_vertical'])
+        if 'content_horizontal' in positions:
+            self.content_paned.sashpos(0, positions['content_horizontal'])
