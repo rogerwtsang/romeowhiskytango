@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-10)
 ## Current Position
 
 Phase: 3 of 6 (GUI Foundation)
-Plan: 3 of 3
+Plan: 4 of 4
 Status: Phase complete
-Last activity: 2026-01-19 — Completed 03-05-PLAN.md
+Last activity: 2026-01-19 — Completed 03-06-PLAN.md
 
-Progress: █████████░ 88%
+Progress: █████████░ 100% (Phase 3)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 3.1 min
-- Total execution time: 0.36 hours
+- Total plans completed: 8
+- Average duration: 2.8 min
+- Total execution time: 0.37 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: █████████░ 88%
 |-------|-------|-------|----------|
 | 01-type-safety | 2/2 | 8 min | 4 min |
 | 02-statistical-robustness | 2/2 | 9 min | 4.5 min |
-| 03-gui-foundation | 3/3 | 7 min | 2.3 min |
+| 03-gui-foundation | 4/4 | 9 min | 2.3 min |
 
 **Recent Trend:**
-- Last 3 plans: 1 min, 3 min, 3 min
+- Last 3 plans: 3 min, 3 min, 2 min
 - Trend: Consistently fast execution on GUI dashboard plans (2-3 min per plan)
 
 ## Accumulated Context
@@ -77,6 +77,10 @@ Recent decisions affecting current work:
 - Widget destruction follows forget() → destroy() → list.remove() pattern to prevent memory leaks
 - Lambda callbacks with panel reference enable same handler for multiple panels
 - Result normalization layer transforms run_simulations() output to ResultsPanel standard format
+- Session state stored as JSON in last_session.json for human readability
+- Paned sash positions stored as absolute pixels (not percentages)
+- Restoration prompt shown on startup if session exists
+- Setup collapse state restored by checking current state before toggling
 
 ### Deferred Issues
 
@@ -94,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-19 12:35:29
-Stopped at: Completed 03-05-PLAN.md (Phase 3 complete)
+Last session: 2026-01-19 17:39:09
+Stopped at: Completed 03-06-PLAN.md (Phase 3 complete - all 4 plans done)
 Resume file: None
