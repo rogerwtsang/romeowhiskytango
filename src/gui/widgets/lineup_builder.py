@@ -22,6 +22,8 @@ class LineupBuilder(ttk.Frame):
         self.lineup: List[Optional[Player]] = [None] * 9
         self.constraints: List[Dict[str, Any]] = []
         self.locked_positions: set = set()  # Positions with constraints
+        self.roster: List[Player] = []
+        self.team_data = None
 
         # Create listbox for lineup
         self.listbox = tk.Listbox(self, height=9, font=('TkDefaultFont', 10))
@@ -210,3 +212,17 @@ class LineupBuilder(ttk.Frame):
     def is_valid(self) -> bool:
         """Check if lineup is valid (all 9 slots filled)."""
         return self.is_full()
+
+    def load_data(self, roster: List[Player], team_data) -> None:
+        """
+        Load roster and team data for lineup building.
+
+        Stores roster and team data references for use in future roster
+        selection UI implementation.
+
+        Args:
+            roster: List of Player objects available for lineup building
+            team_data: Raw team data DataFrame from pybaseball
+        """
+        self.roster = roster
+        self.team_data = team_data
