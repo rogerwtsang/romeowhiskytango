@@ -25,18 +25,104 @@ class LineupBuilder(ttk.Frame):
         self.roster: List[Player] = []
         self.team_data = None
 
-        # Create listbox for lineup
-        self.listbox = tk.Listbox(self, height=9, font=('TkDefaultFont', 10))
-        self.listbox.grid(row=0, column=0, sticky='nsew', padx=(0, 5))
+        # Configure grid weights for two-panel layout
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)  # Roster panel (left)
+        self.columnconfigure(1, weight=0)  # Separator
+        self.columnconfigure(2, weight=1)  # Lineup panel (right)
+
+        # Create left panel: Available Players
+        self._create_roster_panel()
+
+        # Create separator
+        separator = ttk.Separator(self, orient='vertical')
+        separator.grid(row=0, column=1, sticky='ns', padx=10)
+
+        # Create right panel: Batting Order
+        self._create_lineup_panel()
+
+        # Initial refresh
+        self.refresh()
+
+    def _create_roster_panel(self):
+        """Create the roster (available players) panel on the left."""
+        roster_frame = ttk.Frame(self)
+        roster_frame.grid(row=0, column=0, sticky='nsew')
+
+        # Configure grid weights
+        roster_frame.rowconfigure(0, weight=0)  # Label
+        roster_frame.rowconfigure(1, weight=1)  # Listbox
+        roster_frame.columnconfigure(0, weight=1)
+
+        # Label
+        ttk.Label(
+            roster_frame,
+            text="Available Players",
+            font=('TkDefaultFont', 10, 'bold')
+        ).grid(row=0, column=0, sticky='w', pady=(0, 5))
+
+        # Frame for listbox and scrollbar
+        list_frame = ttk.Frame(roster_frame)
+        list_frame.grid(row=1, column=0, sticky='nsew')
+        list_frame.rowconfigure(0, weight=1)
+        list_frame.columnconfigure(0, weight=1)
+
+        # Create roster listbox
+        self.roster_listbox = tk.Listbox(list_frame, font=('TkDefaultFont', 10))
+        self.roster_listbox.grid(row=0, column=0, sticky='nsew')
 
         # Create scrollbar
-        scrollbar = ttk.Scrollbar(self, orient='vertical', command=self.listbox.yview)
+        roster_scrollbar = ttk.Scrollbar(list_frame, orient='vertical', command=self.roster_listbox.yview)
+        self.roster_listbox.configure(yscrollcommand=roster_scrollbar.set)
+        roster_scrollbar.grid(row=0, column=1, sticky='ns')
+
+        # Bind double-click to add player
+        self.roster_listbox.bind('<Double-Button-1>', self._on_roster_double_click)
+
+        # Instruction label
+        ttk.Label(
+            roster_frame,
+            text="Double-click to add to lineup",
+            foreground='gray',
+            font=('TkDefaultFont', 9)
+        ).grid(row=2, column=0, sticky='w', pady=(5, 0))
+
+    def _create_lineup_panel(self):
+        """Create the lineup (batting order) panel on the right."""
+        lineup_frame = ttk.Frame(self)
+        lineup_frame.grid(row=0, column=2, sticky='nsew')
+
+        # Configure grid weights
+        lineup_frame.rowconfigure(0, weight=0)  # Label
+        lineup_frame.rowconfigure(1, weight=1)  # Listbox + buttons
+        lineup_frame.columnconfigure(0, weight=1)
+        lineup_frame.columnconfigure(1, weight=0)  # Buttons
+
+        # Label
+        ttk.Label(
+            lineup_frame,
+            text="Batting Order",
+            font=('TkDefaultFont', 10, 'bold')
+        ).grid(row=0, column=0, columnspan=2, sticky='w', pady=(0, 5))
+
+        # Frame for listbox and scrollbar
+        list_frame = ttk.Frame(lineup_frame)
+        list_frame.grid(row=1, column=0, sticky='nsew', padx=(0, 5))
+        list_frame.rowconfigure(0, weight=1)
+        list_frame.columnconfigure(0, weight=1)
+
+        # Create lineup listbox
+        self.listbox = tk.Listbox(list_frame, height=9, font=('TkDefaultFont', 10))
+        self.listbox.grid(row=0, column=0, sticky='nsew')
+
+        # Create scrollbar
+        scrollbar = ttk.Scrollbar(list_frame, orient='vertical', command=self.listbox.yview)
         self.listbox.configure(yscrollcommand=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky='ns')
 
         # Create control buttons
-        btn_frame = ttk.Frame(self)
-        btn_frame.grid(row=0, column=2, sticky='ns', padx=(5, 0))
+        btn_frame = ttk.Frame(lineup_frame)
+        btn_frame.grid(row=1, column=1, sticky='ns')
 
         self.up_btn = ttk.Button(btn_frame, text="▲ Move Up", command=self.move_up, width=12)
         self.up_btn.pack(pady=2)
@@ -52,15 +138,37 @@ class LineupBuilder(ttk.Frame):
         self.clear_btn = ttk.Button(btn_frame, text="Clear All", command=self.clear_lineup, width=12)
         self.clear_btn.pack(pady=2)
 
-        # Configure grid weights
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
+    def _on_roster_double_click(self, event):
+        """Handle double-click on roster player to add to lineup."""
+        selection = self.roster_listbox.curselection()
+        if not selection:
+            return
 
-        # Initial refresh
-        self.refresh()
+        idx = selection[0]
+        if 0 <= idx < len(self.roster):
+            player = self.roster[idx]
+            # Add to first empty slot
+            if self.add_player(player):
+                self.refresh()
 
     def refresh(self):
-        """Refresh the listbox display."""
+        """Refresh both the roster and lineup listbox displays."""
+        # Refresh roster listbox
+        self.roster_listbox.delete(0, tk.END)
+        for player in self.roster:
+            # Show if player is already in lineup
+            in_lineup = player in self.lineup
+            prefix = "[IN LINEUP] " if in_lineup else ""
+            pos_display = f"[{player.position}] " if player.position else ""
+            text = f"{prefix}{pos_display}{player.name} ({player.ba:.3f}/{player.obp:.3f}/{player.slg:.3f})"
+            self.roster_listbox.insert(tk.END, text)
+
+            # Gray out players already in lineup
+            if in_lineup:
+                idx = self.roster_listbox.size() - 1
+                self.roster_listbox.itemconfig(idx, foreground='gray')
+
+        # Refresh lineup listbox
         self.listbox.delete(0, tk.END)
 
         for i, player in enumerate(self.lineup):
@@ -217,8 +325,7 @@ class LineupBuilder(ttk.Frame):
         """
         Load roster and team data for lineup building.
 
-        Stores roster and team data references for use in future roster
-        selection UI implementation.
+        Stores roster and team data references and refreshes the roster display.
 
         Args:
             roster: List of Player objects available for lineup building
@@ -226,3 +333,4 @@ class LineupBuilder(ttk.Frame):
         """
         self.roster = roster
         self.team_data = team_data
+        self.refresh()
