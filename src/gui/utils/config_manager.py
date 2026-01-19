@@ -136,3 +136,60 @@ class ConfigManager:
         except Exception as e:
             print(f"Error deleting lineup '{name}': {e}")
             return False
+
+    def save_session(self, dashboard_state: Dict[str, Any]) -> None:
+        """
+        Save current dashboard session state to file.
+
+        Args:
+            dashboard_state: Dictionary containing dashboard state with keys:
+                - setup_collapsed (bool): Whether setup panel is collapsed
+                - compare_mode (bool): Whether compare mode is active
+                - lineup_panels (list): List of lineup data dicts
+                - paned_positions (dict): Sash positions for paned windows
+        """
+        try:
+            session_file = self.config_dir / 'last_session.json'
+            with open(session_file, 'w') as f:
+                json.dump(dashboard_state, f, indent=2)
+        except IOError as e:
+            print(f"Error saving session state: {e}")
+
+    def load_session(self) -> Optional[Dict[str, Any]]:
+        """
+        Load last dashboard session state from file.
+
+        Returns:
+            Dictionary containing dashboard state, or None if file doesn't exist
+            or is invalid.
+        """
+        session_file = self.config_dir / 'last_session.json'
+
+        if not session_file.exists():
+            return None
+
+        try:
+            with open(session_file, 'r') as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error loading session state: {e}")
+            return None
+
+    def session_exists(self) -> bool:
+        """
+        Check if a valid session file exists.
+
+        Returns:
+            True if last_session.json exists and is valid JSON, False otherwise.
+        """
+        session_file = self.config_dir / 'last_session.json'
+
+        if not session_file.exists():
+            return False
+
+        try:
+            with open(session_file, 'r') as f:
+                json.load(f)
+            return True
+        except (FileNotFoundError, json.JSONDecodeError):
+            return False
