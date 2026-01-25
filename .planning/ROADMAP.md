@@ -11,8 +11,9 @@ None
 ## Phases
 
 - [x] **Phase 1: Type Safety** - Fix 30+ critical type errors preventing crashes
-- [ ] **Phase 2: Statistical Robustness** - Audit model assumptions and document findings
-- [ ] **Phase 3: GUI Foundation** - Consolidate 9 tabs into focused dashboard structure
+- [x] **Phase 2: Statistical Robustness** - Audit model assumptions and document findings
+- [x] **Phase 3: GUI Foundation** - Consolidate 9 tabs into focused dashboard structure
+- [ ] **Phase 3.1: Cleanup Planning Docs** - Clean up stray/orphan documents, consolidate and recommend removals (INSERTED)
 - [ ] **Phase 4: Results Visualization** - Charts and metrics that communicate at a glance
 - [ ] **Phase 5: Workflow Polish** - Reduce clicks, clean visual hierarchy
 - [ ] **Phase 6: Test Coverage** - Implement 19 stubs + integration tests
@@ -55,9 +56,18 @@ Plans:
 - [ ] 03-06-PLAN.md — Add session persistence and startup restoration
 - [ ] 03-07-PLAN.md — Human verification of dashboard functionality
 
+### Phase 3.1: Cleanup Planning Docs (INSERTED)
+**Goal**: Clean up stray/orphan documents and .md files; consolidate things that can be merged, recommend files for removal
+**Depends on**: Phase 3
+**Research**: Unlikely (internal housekeeping)
+**Plans**: 1 plan
+
+Plans:
+- [ ] 03.1-01-PLAN.md — Audit and cleanup planning directory (remove orphans, update ROADMAP)
+
 ### Phase 4: Results Visualization
 **Goal**: Charts and metrics that communicate simulation insights at a glance
-**Depends on**: Phase 3
+**Depends on**: Phase 3.1
 **Research**: Likely (charting libraries for Tkinter)
 **Research topics**: matplotlib embedding in Tkinter, interactive charts, statistical visualizations
 **Plans**: TBD
@@ -90,8 +100,9 @@ Items:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Type Safety | 2/2 | ✓ Complete | 2026-01-17 |
-| 2. Statistical Robustness | 0/2 | Not started | - |
-| 3. GUI Foundation | 0/7 | Not started | - |
+| 2. Statistical Robustness | 2/2 | ✓ Complete | - |
+| 3. GUI Foundation | 4/4 | ✓ Complete | 2026-01-19 |
+| 3.1 Cleanup Planning Docs | 0/1 | Not started | - |
 | 4. Results Visualization | 0/TBD | Not started | - |
 | 5. Workflow Polish | 0/TBD | Not started | - |
 | 6. Test Coverage | 0/TBD | Not started | - |
