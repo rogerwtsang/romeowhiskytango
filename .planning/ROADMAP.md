@@ -13,10 +13,11 @@ None
 - [x] **Phase 1: Type Safety** - Fix 30+ critical type errors preventing crashes
 - [x] **Phase 2: Statistical Robustness** - Audit model assumptions and document findings
 - [x] **Phase 3: GUI Foundation** - Consolidate 9 tabs into focused dashboard structure
-- [ ] **Phase 3.1: Cleanup Planning Docs** - Clean up stray/orphan documents, consolidate and recommend removals (INSERTED)
+- [x] **Phase 3.1: Cleanup Planning Docs** - Clean up stray/orphan documents, consolidate and recommend removals (INSERTED)
 - [ ] **Phase 4: Results Visualization** - Charts and metrics that communicate at a glance
 - [ ] **Phase 5: Workflow Polish** - Reduce clicks, clean visual hierarchy
 - [ ] **Phase 6: Test Coverage** - Implement 19 stubs + integration tests
+- [ ] **Phase 7: Season W/L Simulation** - Extend to season-level win/loss predictions (DEFERRED - researched ahead)
 
 ## Phase Details
 
@@ -45,16 +46,15 @@ Plans:
 **Depends on**: Phase 2
 **Research**: Likely (dashboard layout patterns for Tkinter)
 **Research topics**: Tkinter dashboard patterns, card-based layouts, ttk theming
-**Plans**: 7 plans
+**Plans**: 6 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Create CollapsibleFrame widget foundation
-- [ ] 03-02-PLAN.md — Build SetupPanel with collapsible Assumptions subsection
-- [ ] 03-03-PLAN.md — Build LineupPanel with integrated Run controls
-- [ ] 03-04-PLAN.md — Build ResultsPanel with summary and collapsible details
-- [ ] 03-05-PLAN.md — Create MainDashboard container with compare mode
-- [ ] 03-06-PLAN.md — Add session persistence and startup restoration
-- [ ] 03-07-PLAN.md — Human verification of dashboard functionality
+- [x] 03-01-PLAN.md — Create CollapsibleFrame widget foundation
+- [x] 03-02-PLAN.md — Build SetupPanel with collapsible Assumptions subsection
+- [x] 03-03-PLAN.md — Build LineupPanel with integrated Run controls
+- [x] 03-04-PLAN.md — Build ResultsPanel with summary and collapsible details
+- [x] 03-05-PLAN.md — Create MainDashboard container with compare mode
+- [x] 03-06-PLAN.md — Add session persistence and startup restoration
 
 ### Phase 3.1: Cleanup Planning Docs (INSERTED)
 **Goal**: Clean up stray/orphan documents and .md files; consolidate things that can be merged, recommend files for removal
@@ -63,7 +63,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 03.1-01-PLAN.md — Audit and cleanup planning directory (remove orphans, update ROADMAP)
+- [x] 03.1-01-PLAN.md — Audit and cleanup planning directory (remove orphans, update ROADMAP)
 
 ### Phase 4: Results Visualization
 **Goal**: Charts and metrics that communicate simulation insights at a glance
@@ -95,14 +95,26 @@ Items:
 - Implement 19 stubbed pytest functions
 - Add integration tests for simulation pipeline
 
+### Phase 7: Season W/L Simulation (DEFERRED)
+**Goal**: Extend simulation to season-level win/loss predictions
+**Depends on**: Phase 6
+**Research**: Complete (2026-01-25)
+**Plans**: 1 plan created ahead of schedule
+
+**Note**: Research and initial plan created ahead of schedule (2026-01-25). Phase 7 contains detailed methodology research (1,484 lines) and implementation plan but is deferred until Phases 4-6 complete.
+
+Plans:
+- [ ] 07-01-PLAN.md — Implement season-level W/L simulation engine
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Type Safety | 2/2 | ✓ Complete | 2026-01-17 |
 | 2. Statistical Robustness | 2/2 | ✓ Complete | - |
-| 3. GUI Foundation | 4/4 | ✓ Complete | 2026-01-19 |
-| 3.1 Cleanup Planning Docs | 0/1 | Not started | - |
+| 3. GUI Foundation | 6/6 | ✓ Complete | 2026-01-19 |
+| 3.1 Cleanup Planning Docs | 1/1 | ✓ Complete | 2026-01-25 |
 | 4. Results Visualization | 0/TBD | Not started | - |
 | 5. Workflow Polish | 0/TBD | Not started | - |
 | 6. Test Coverage | 0/TBD | Not started | - |
+| 7. Season W/L Simulation | 0/1 | Deferred (researched ahead) | - |
