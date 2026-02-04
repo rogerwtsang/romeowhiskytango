@@ -5,10 +5,50 @@
 
 from typing import List, Dict, Callable, Optional
 import numpy as np
+from scipy.stats import norm
 from src.models.player import Player
 from src.simulation.season import simulate_season
 from src.engine.pa_generator import PAOutcomeGenerator
 import config
+
+
+def _calculate_win_probability(
+    season_runs_arr: np.ndarray,
+    n_games: int,
+    n_iterations: int
+) -> Dict[str, float]:
+    """Calculate win probability with Wilson score confidence interval.
+
+    Win probability is defined as the proportion of simulated seasons
+    that exceed league average runs (4.5 runs/game).
+
+    Args:
+        season_runs_arr: Array of season run totals
+        n_games: Games per season
+        n_iterations: Number of iterations
+
+    Returns:
+        Dictionary with mean, ci_lower, ci_upper
+    """
+    # League average ~4.5 runs/game
+    league_avg_runs = 4.5 * n_games
+    wins_above_avg = np.sum(season_runs_arr >= league_avg_runs)
+    p_hat = wins_above_avg / n_iterations
+
+    # Wilson score interval for 95% CI (more accurate for proportions)
+    z = norm.ppf(0.975)  # 1.96 for 95% CI
+    n = n_iterations
+    denominator = 1 + z**2 / n
+    center = (p_hat + z**2 / (2 * n)) / denominator
+    spread = z * np.sqrt((p_hat * (1 - p_hat) + z**2 / (4 * n)) / n) / denominator
+    ci_lower = max(0.0, center - spread)
+    ci_upper = min(1.0, center + spread)
+
+    return {
+        'mean': float(p_hat),
+        'ci_lower': float(ci_lower),
+        'ci_upper': float(ci_upper)
+    }
 
 
 def run_simulations(
@@ -47,6 +87,7 @@ def run_simulations(
     season_sb = []
     season_cs = []
     season_sf = []
+    season_lob = []
 
     # Track progress
     progress_points = [int(n_iterations * p) for p in [0.25, 0.5, 0.75, 1.0]]
@@ -61,6 +102,7 @@ def run_simulations(
         season_sb.append(result.get('total_sb', 0))
         season_cs.append(result.get('total_cs', 0))
         season_sf.append(result.get('total_sf', 0))
+        season_lob.append(result.get('total_lob', 0))
 
         # Progress updates
         if verbose >= 1 and (i + 1) in progress_points:
@@ -81,6 +123,7 @@ def run_simulations(
     season_sb_arr = np.array(season_sb)
     season_cs_arr = np.array(season_cs)
     season_sf_arr = np.array(season_sf)
+    season_lob_arr = np.array(season_lob)
 
     # Calculate statistics
     summary = {
@@ -145,7 +188,21 @@ def run_simulations(
         'runs_per_game': {
             'mean': float(np.mean(season_runs_arr) / n_games),
             'std': float(np.std(season_runs_arr) / n_games)
-        }
+        },
+
+        # Win probability: proportion of seasons above league average runs
+        # League average ~4.5 runs/game * n_games = expected season runs
+        'win_probability': _calculate_win_probability(season_runs_arr, n_games, n_iterations),
+
+        # LOB per game from tracked season totals
+        'lob_per_game': {
+            'mean': float(np.mean(season_lob_arr) / n_games),
+            'std': float(np.std(season_lob_arr) / n_games)
+        },
+
+        # RISP data is NOT currently tracked in game engine
+        # Placeholder with None - GUI handles gracefully
+        'risp_conversion': None  # TODO: Add RISP tracking to game engine in future phase
     }
 
     # Store raw data for further analysis
@@ -155,7 +212,8 @@ def run_simulations(
         'season_walks': season_walks,
         'season_sb': season_sb,
         'season_cs': season_cs,
-        'season_sf': season_sf
+        'season_sf': season_sf,
+        'season_lob': season_lob
     }
 
     return {
