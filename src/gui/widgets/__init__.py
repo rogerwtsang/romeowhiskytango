@@ -8,6 +8,7 @@ from .constraint_dialog import ConstraintDialog
 from .summary_card import SummaryCard
 from .comparison_table import ComparisonTable
 from .player_contribution_chart import PlayerContributionChart
+from .optimization_preview import LineupRankingList, LineupDiffView
 
 __all__ = [
     'CollapsibleFrame',
@@ -18,4 +19,6 @@ __all__ = [
     'SummaryCard',
     'ComparisonTable',
     'PlayerContributionChart',
+    'LineupRankingList',
+    'LineupDiffView',
 ]
