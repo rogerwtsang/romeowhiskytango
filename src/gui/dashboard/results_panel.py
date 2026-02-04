@@ -15,6 +15,7 @@ import numpy as np
 from src.gui.utils.results_manager import ResultsManager
 from src.gui.utils.chart_utils import create_histogram_with_kde
 from src.gui.widgets.collapsible_frame import CollapsibleFrame
+from src.gui.widgets import PlayerContributionChart
 
 
 class ResultsPanel(ttk.Frame):
@@ -127,6 +128,7 @@ class ResultsPanel(ttk.Frame):
         content.columnconfigure(0, weight=1)
         content.rowconfigure(0, weight=0)  # Additional stats
         content.rowconfigure(1, weight=1)  # Histogram
+        content.rowconfigure(2, weight=1)  # Contribution chart
 
         # Additional statistics section
         stats_frame = ttk.LabelFrame(content, text="Additional Statistics", padding=5)
@@ -171,6 +173,14 @@ class ResultsPanel(ttk.Frame):
 
         # Initialize with empty plot
         self._clear_histogram()
+
+        # Player contributions section
+        contributions_frame = ttk.LabelFrame(content, text="Player Contributions", padding=5)
+        contributions_frame.grid(row=2, column=0, sticky='nsew', padx=5, pady=5)
+
+        # Create contribution chart widget (figsize=(5,3) is secondary to histogram)
+        self.contribution_chart = PlayerContributionChart(contributions_frame)
+        self.contribution_chart.pack(fill=tk.BOTH, expand=True)
 
     def display_results(self, result_data: Dict[str, Any]):
         """
@@ -225,6 +235,11 @@ class ResultsPanel(ttk.Frame):
         else:
             self._clear_histogram()
 
+        # Update contribution chart
+        # Extract contribution data if available (will be None until optimizer phase)
+        contribution_data = result_data.get('contributions', None)
+        self.contribution_chart.set_data(contribution_data)
+
     def clear_results(self):
         """Clear all displayed data."""
         self._current_result = None
@@ -244,6 +259,9 @@ class ResultsPanel(ttk.Frame):
 
         # Clear histogram
         self._clear_histogram()
+
+        # Clear contribution chart (shows placeholder)
+        self.contribution_chart.set_data(None)
 
     def get_current_result(self) -> Optional[Dict[str, Any]]:
         """
