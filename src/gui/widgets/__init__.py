@@ -7,6 +7,7 @@ from .lineup_builder import LineupBuilder
 from .constraint_dialog import ConstraintDialog
 from .summary_card import SummaryCard
 from .comparison_table import ComparisonTable
+from .player_contribution_chart import PlayerContributionChart
 
 __all__ = [
     'CollapsibleFrame',
@@ -16,4 +17,5 @@ __all__ = [
     'ConstraintDialog',
     'SummaryCard',
     'ComparisonTable',
+    'PlayerContributionChart',
 ]
