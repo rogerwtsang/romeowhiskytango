@@ -109,6 +109,31 @@ class ResultsPanel(ttk.Frame):
         self.iterations_label = ttk.Label(summary_frame, text="--")
         self.iterations_label.grid(row=3, column=1, sticky='w', padx=5, pady=2)
 
+        # Row 4: Win Probability
+        ttk.Label(summary_frame, text="Win Probability:").grid(
+            row=4, column=0, sticky='w', padx=5, pady=2
+        )
+        self.win_prob_label = ttk.Label(
+            summary_frame,
+            text="--",
+            font=('TkDefaultFont', 10, 'bold')
+        )
+        self.win_prob_label.grid(row=4, column=1, sticky='w', padx=5, pady=2)
+
+        # Row 5: LOB per Game
+        ttk.Label(summary_frame, text="LOB per Game:").grid(
+            row=5, column=0, sticky='w', padx=5, pady=2
+        )
+        self.lob_label = ttk.Label(summary_frame, text="--")
+        self.lob_label.grid(row=5, column=1, sticky='w', padx=5, pady=2)
+
+        # Row 6: RISP Conversion
+        ttk.Label(summary_frame, text="RISP Conversion:").grid(
+            row=6, column=0, sticky='w', padx=5, pady=2
+        )
+        self.risp_label = ttk.Label(summary_frame, text="--")
+        self.risp_label.grid(row=6, column=1, sticky='w', padx=5, pady=2)
+
     def _create_details_section(self):
         """Create collapsible detailed results section."""
         # CollapsibleFrame for details (initially collapsed)
@@ -199,6 +224,9 @@ class ResultsPanel(ttk.Frame):
                 - median (optional): Median value
                 - p25 (optional): 25th percentile
                 - p75 (optional): 75th percentile
+                - win_probability (optional): Dict with mean, ci_lower, ci_upper
+                - lob_per_game (optional): Dict with mean, std
+                - risp_conversion (optional): Dict with rate, or None
         """
         self._current_result = result_data
 
@@ -213,6 +241,33 @@ class ResultsPanel(ttk.Frame):
         self.std_label.config(text=f"{std:.1f}")
         self.ci_label.config(text=f"[{ci_lower:.1f}, {ci_upper:.1f}]")
         self.iterations_label.config(text=f"{iterations:,}")
+
+        # Win probability
+        win_prob = result_data.get('win_probability', {})
+        if win_prob:
+            wp_mean = win_prob.get('mean', 0) * 100  # Convert to percentage
+            wp_lower = win_prob.get('ci_lower', 0) * 100
+            wp_upper = win_prob.get('ci_upper', 0) * 100
+            self.win_prob_label.config(text=f"{wp_mean:.0f}% [{wp_lower:.0f}-{wp_upper:.0f}%]")
+        else:
+            self.win_prob_label.config(text="--")
+
+        # LOB per game
+        lob = result_data.get('lob_per_game', {})
+        if lob:
+            lob_mean = lob.get('mean', 0)
+            lob_std = lob.get('std', 0)
+            self.lob_label.config(text=f"{lob_mean:.1f} +/- {lob_std:.1f}")
+        else:
+            self.lob_label.config(text="--")
+
+        # RISP conversion (placeholder handling)
+        risp = result_data.get('risp_conversion')
+        if risp:
+            rate = risp.get('rate', 0) * 100
+            self.risp_label.config(text=f"{rate:.1f}%")
+        else:
+            self.risp_label.config(text="--")  # Graceful degradation
 
         # Update additional statistics
         distribution = result_data.get('distribution', [])
@@ -249,6 +304,11 @@ class ResultsPanel(ttk.Frame):
         self.std_label.config(text="--")
         self.ci_label.config(text="--")
         self.iterations_label.config(text="--")
+
+        # Reset new metric labels
+        self.win_prob_label.config(text="--")
+        self.lob_label.config(text="--")
+        self.risp_label.config(text="--")
 
         # Reset additional stats labels
         self.min_label.config(text="--")

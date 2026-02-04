@@ -229,6 +229,10 @@ class MainDashboard(ttk.Frame):
             'median': runs.get('median'),
             'p25': runs.get('p25'),
             'p75': runs.get('p75'),
+            # New metrics (04-02)
+            'win_probability': summary.get('win_probability'),
+            'lob_per_game': summary.get('lob_per_game'),
+            'risp_conversion': summary.get('risp_conversion'),  # None until tracking added
         }
 
         return normalized
