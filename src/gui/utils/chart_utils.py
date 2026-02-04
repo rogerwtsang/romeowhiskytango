@@ -182,7 +182,7 @@ def create_comparison_overlay(
 
     # Calculate common bin edges for fair comparison
     all_data = np.concatenate([data1_arr, data2_arr])
-    bin_edges = np.histogram_bin_edges(all_data, bins=bins)
+    bin_edges = np.histogram_bin_edges(all_data, bins=bins).tolist()
 
     # Create overlaid step histograms
     ax.hist(

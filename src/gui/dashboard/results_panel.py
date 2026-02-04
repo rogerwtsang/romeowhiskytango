@@ -13,6 +13,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 
 from src.gui.utils.results_manager import ResultsManager
+from src.gui.utils.chart_utils import create_histogram_with_kde
 from src.gui.widgets.collapsible_frame import CollapsibleFrame
 
 
@@ -255,12 +256,12 @@ class ResultsPanel(ttk.Frame):
 
     def _create_histogram(self, distribution, mean: float, median: float):
         """
-        Create runs distribution histogram.
+        Create runs distribution histogram with KDE overlay.
 
         Args:
             distribution: List/array of season runs values
-            mean: Mean value for vertical line
-            median: Median value for vertical line
+            mean: Mean value for vertical line (unused, calculated by chart_utils)
+            median: Median value for vertical line (unused, calculated by chart_utils)
         """
         self.ax.clear()
 
@@ -268,36 +269,15 @@ class ResultsPanel(ttk.Frame):
             self._clear_histogram()
             return
 
-        # Create histogram
-        self.ax.hist(
+        # Use chart_utils for histogram with KDE overlay
+        # Mean and median are calculated internally by create_histogram_with_kde
+        create_histogram_with_kde(
+            self.ax,
             distribution,
-            bins=30,
-            alpha=0.7,
-            color='steelblue',
-            edgecolor='black'
+            show_mean=True,
+            show_median=True,
+            title='Distribution of Simulated Runs per Season'
         )
-
-        # Add mean and median lines
-        self.ax.axvline(
-            mean,
-            color='red',
-            linestyle='--',
-            linewidth=2,
-            label=f'Mean: {mean:.1f}'
-        )
-        self.ax.axvline(
-            median,
-            color='green',
-            linestyle='--',
-            linewidth=2,
-            label=f'Median: {median:.1f}'
-        )
-
-        self.ax.set_xlabel('Runs per Season')
-        self.ax.set_ylabel('Frequency')
-        self.ax.set_title('Distribution of Simulated Runs per Season')
-        self.ax.legend()
-        self.ax.grid(True, alpha=0.3)
 
         self.figure.tight_layout()
         self.canvas.draw()
