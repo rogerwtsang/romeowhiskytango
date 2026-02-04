@@ -91,6 +91,11 @@ Recent decisions affecting current work:
 - chart_utils: Clip x-axis to 0 minimum for runs distributions
 - PlayerContributionChart uses figsize=(5,3) vs histogram (8,5) for visual hierarchy
 - Contribution chart shows placeholder until optimizer phase provides data
+- Use Wilson score interval for win probability CI (more accurate for proportions than normal approximation)
+- Define win probability as proportion of seasons exceeding league average runs (4.5 runs/game)
+- RISP conversion displays '--' placeholder since game engine doesn't track this data
+- LOB tracking uses existing total_lob from season.py (no engine changes needed)
+- Graceful degradation: Display '--' when metric data unavailable
 
 ### Roadmap Evolution
 
