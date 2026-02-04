@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-10)
 
 **Core value:** Visual clarity — simulation results must be easy to understand at a glance
-**Current focus:** Phase 3.1 — Cleanup Planning Docs
+**Current focus:** Phase 4 — Results Visualization
 
 ## Current Position
 
-Phase: 3.1 of 7 (Cleanup Planning Docs)
-Plan: 1 of 1
-Status: Phase complete
-Last activity: 2026-01-25 — Completed 03.1-01-PLAN.md
+Phase: 4 of 7 (Results Visualization)
+Plan: 1 of 4
+Status: In progress
+Last activity: 2026-02-04 — Completed 04-01-PLAN.md
 
-Progress: ████████░░ 100% (Phase 3.1)
+Progress: ██████████░░░░░░ 62% (10/16 plans across phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 2.7 min
-- Total execution time: 0.41 hours
+- Total plans completed: 10
+- Average duration: 2.8 min
+- Total execution time: 0.48 hours
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: ████████░░ 100% (Phase 3.1)
 | 02-statistical-robustness | 2/2 | 9 min | 4.5 min |
 | 03-gui-foundation | 4/4 | 9 min | 2.3 min |
 | 03.1-cleanup-planning-docs | 1/1 | 2.3 min | 2.3 min |
+| 04-results-visualization | 1/4 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 3 plans: 3 min, 2 min, 2.3 min
-- Trend: Consistently fast execution on documentation/infrastructure plans (2-3 min per plan)
+- Last 3 plans: 2 min, 2.3 min, 4 min
+- Trend: Slight increase for visualization work (seaborn integration, chart utilities)
 
 ## Accumulated Context
 
@@ -85,6 +86,9 @@ Recent decisions affecting current work:
 - Remove orphan/duplicate planning files directly (git history provides archival)
 - Retain ahead-of-schedule research (Phase 7) and document as deferred
 - Implicit verification acceptable for completed phases (no explicit checkpoint execution needed)
+- Use sns.histplot(kde=True) for combined histogram+KDE visualization
+- chart_utils: Always pass ax parameter explicitly to seaborn, never use sns.set_theme()
+- chart_utils: Clip x-axis to 0 minimum for runs distributions
 
 ### Roadmap Evolution
 
@@ -107,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-25 21:55:44
-Stopped at: Completed 03.1-01-PLAN.md (Phase 3.1 complete - planning directory cleanup done)
+Last session: 2026-02-04 11:00:00
+Stopped at: Completed 04-01-PLAN.md (chart utilities and KDE histogram)
 Resume file: None
