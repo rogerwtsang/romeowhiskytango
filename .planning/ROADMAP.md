@@ -68,11 +68,16 @@ Plans:
 ### Phase 4: Results Visualization
 **Goal**: Charts and metrics that communicate simulation insights at a glance
 **Depends on**: Phase 3.1
-**Research**: Likely (charting libraries for Tkinter)
-**Research topics**: matplotlib embedding in Tkinter, interactive charts, statistical visualizations
-**Plans**: TBD
+**Research**: Complete (2026-02-03)
+**Plans**: 4 plans
 
 Core value delivery: Visual clarity — results easy to understand at a glance
+
+Plans:
+- [ ] 04-01-PLAN.md — Add seaborn dependency, create chart utilities, enhance histogram with KDE
+- [ ] 04-02-PLAN.md — Add win probability, LOB, and RISP metrics to summary display
+- [ ] 04-03-PLAN.md — Create player contribution chart with slot/player toggle
+- [ ] 04-04-PLAN.md — Create optimization preview widgets (ranking list, diff view)
 
 ### Phase 5: Workflow Polish
 **Goal**: Reduce clicks to run simulation, clean visual hierarchy
@@ -114,7 +119,7 @@ Plans:
 | 2. Statistical Robustness | 2/2 | ✓ Complete | - |
 | 3. GUI Foundation | 6/6 | ✓ Complete | 2026-01-19 |
 | 3.1 Cleanup Planning Docs | 1/1 | ✓ Complete | 2026-01-25 |
-| 4. Results Visualization | 0/TBD | Not started | - |
+| 4. Results Visualization | 0/4 | Planned | - |
 | 5. Workflow Polish | 0/TBD | Not started | - |
 | 6. Test Coverage | 0/TBD | Not started | - |
 | 7. Season W/L Simulation | 0/1 | Deferred (researched ahead) | - |
