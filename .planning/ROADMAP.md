@@ -55,6 +55,7 @@ Plans:
 - [x] 03-04-PLAN.md — Build ResultsPanel with summary and collapsible details
 - [x] 03-05-PLAN.md — Create MainDashboard container with compare mode
 - [x] 03-06-PLAN.md — Add session persistence and startup restoration
+- [x] 03-07-PLAN.md — Dashboard layout restructure with sidebar and dark theme
 
 ### Phase 3.1: Cleanup Planning Docs (INSERTED)
 **Goal**: Clean up stray/orphan documents and .md files; consolidate things that can be merged, recommend files for removal
@@ -117,9 +118,9 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Type Safety | 2/2 | ✓ Complete | 2026-01-17 |
 | 2. Statistical Robustness | 2/2 | ✓ Complete | - |
-| 3. GUI Foundation | 6/6 | ✓ Complete | 2026-01-19 |
+| 3. GUI Foundation | 7/7 | ✓ Complete | 2026-02-06 |
 | 3.1 Cleanup Planning Docs | 1/1 | ✓ Complete | 2026-01-25 |
-| 4. Results Visualization | 0/4 | Planned | - |
+| 4. Results Visualization | 2/4 | In Progress | - |
 | 5. Workflow Polish | 0/TBD | Not started | - |
 | 6. Test Coverage | 0/TBD | Not started | - |
 | 7. Season W/L Simulation | 0/1 | Deferred (researched ahead) | - |
