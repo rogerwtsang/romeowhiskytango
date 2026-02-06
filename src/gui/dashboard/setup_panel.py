@@ -121,7 +121,7 @@ class SetupPanel(ttk.Frame):
         self.n_sims_scale = tk.Scale(
             sim_inner,
             from_=100,
-            to=100000,
+            to=10000,
             orient='horizontal',
             length=300,
             command=self._on_sims_change
@@ -160,14 +160,52 @@ class SetupPanel(ttk.Frame):
         self.seed_entry = ttk.Entry(seed_frame, width=10)
         self.seed_entry.pack(side=tk.LEFT, padx=(10, 0))
 
-        # Assumptions Section (Collapsible)
+        # Assumptions Section (Collapsible with Scrollbar)
         self.assumptions_frame = CollapsibleFrame(self, text="Assumptions")
         self.assumptions_frame.grid(row=2, column=0, sticky='nsew', padx=10, pady=(5, 10))
 
         assumptions_content = self.assumptions_frame.get_content_frame()
         assumptions_content.columnconfigure(0, weight=1)
+        assumptions_content.rowconfigure(0, weight=1)
 
-        self._create_assumptions_section(assumptions_content)
+        # Create Canvas with scrollbar for overflow content
+        self.assumptions_canvas = tk.Canvas(
+            assumptions_content,
+            highlightthickness=0,
+            bg='#2a2a2a'  # Match dark theme
+        )
+        self.assumptions_scrollbar = ttk.Scrollbar(
+            assumptions_content,
+            orient='vertical',
+            command=self.assumptions_canvas.yview
+        )
+        self.assumptions_canvas.configure(yscrollcommand=self.assumptions_scrollbar.set)
+
+        # Grid canvas and scrollbar
+        self.assumptions_canvas.grid(row=0, column=0, sticky='nsew')
+        self.assumptions_scrollbar.grid(row=0, column=1, sticky='ns')
+
+        # Create frame inside canvas for actual content
+        self.assumptions_inner_frame = ttk.Frame(self.assumptions_canvas)
+        self.assumptions_canvas_window = self.assumptions_canvas.create_window(
+            0, 0,
+            window=self.assumptions_inner_frame,
+            anchor='nw'
+        )
+
+        # Configure scrollable region
+        self.assumptions_inner_frame.bind(
+            '<Configure>',
+            lambda e: self.assumptions_canvas.configure(scrollregion=self.assumptions_canvas.bbox('all'))
+        )
+
+        # Bind mousewheel for scrolling
+        self.assumptions_canvas.bind('<Enter>', self._bind_mousewheel)
+        self.assumptions_canvas.bind('<Leave>', self._unbind_mousewheel)
+
+        self.assumptions_inner_frame.columnconfigure(0, weight=1)
+
+        self._create_assumptions_section(self.assumptions_inner_frame)
 
     def _create_assumptions_section(self, parent: ttk.Frame) -> None:
         """Create assumptions subsection with baserunning, errors, and distribution settings.
@@ -699,3 +737,24 @@ class SetupPanel(ttk.Frame):
             callback: Callback function accepting (roster, team_data)
         """
         self.data_loaded_callback = callback
+
+    def _bind_mousewheel(self, event):
+        """Bind mousewheel to canvas scrolling."""
+        self.assumptions_canvas.bind_all('<MouseWheel>', self._on_mousewheel)
+        self.assumptions_canvas.bind_all('<Button-4>', self._on_mousewheel)  # Linux scroll up
+        self.assumptions_canvas.bind_all('<Button-5>', self._on_mousewheel)  # Linux scroll down
+
+    def _unbind_mousewheel(self, event):
+        """Unbind mousewheel from canvas."""
+        self.assumptions_canvas.unbind_all('<MouseWheel>')
+        self.assumptions_canvas.unbind_all('<Button-4>')
+        self.assumptions_canvas.unbind_all('<Button-5>')
+
+    def _on_mousewheel(self, event):
+        """Handle mousewheel scrolling."""
+        if event.num == 4:  # Linux scroll up
+            self.assumptions_canvas.yview_scroll(-1, 'units')
+        elif event.num == 5:  # Linux scroll down
+            self.assumptions_canvas.yview_scroll(1, 'units')
+        else:  # Windows/Mac
+            self.assumptions_canvas.yview_scroll(int(-1 * (event.delta / 120)), 'units')
