@@ -30,19 +30,27 @@ class ResultsPanel(ttk.Frame):
         panel.display_results(result_data)
     """
 
-    def __init__(self, parent, results_manager: Optional[ResultsManager] = None, **kwargs):
+    def __init__(
+        self,
+        parent,
+        results_manager: Optional[ResultsManager] = None,
+        compact: bool = False,
+        **kwargs
+    ):
         """
         Initialize results panel.
 
         Args:
             parent: Parent widget
             results_manager: Optional ResultsManager for results storage
+            compact: If True, use horizontal layout for bottom placement
             **kwargs: Additional arguments passed to Frame
         """
         super().__init__(parent, **kwargs)
 
         self.results_manager = results_manager
         self._current_result: Optional[Dict[str, Any]] = None
+        self.compact = compact
 
         # Configure grid layout
         self.columnconfigure(0, weight=1)
