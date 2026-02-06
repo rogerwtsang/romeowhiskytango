@@ -8,7 +8,7 @@ from tkinter import ttk, messagebox
 from typing import Optional, Callable, Dict, Any, List
 
 from src.gui.dashboard.setup_panel import SetupPanel
-from src.gui.dashboard.lineup_panel import LineupPanel
+from src.gui.dashboard.simulation_panel import SimulationPanel
 from src.gui.dashboard.results_panel import ResultsPanel
 from src.gui.utils.config_manager import ConfigManager
 from src.gui.utils.results_manager import ResultsManager
@@ -17,13 +17,13 @@ from src.models.player import Player
 
 
 class MainDashboard(ttk.Frame):
-    """Main dashboard container with resizable panels and compare mode.
+    """Main dashboard container with left sidebar layout and compare mode.
 
-    Replaces the 9-tab notebook structure with a unified dashboard layout
-    featuring:
-    - Top: Collapsible Setup panel
-    - Bottom-left: Lineup panel(s) (1 or 2 in compare mode)
-    - Bottom-right: Results panel
+    Dashboard layout (per 03-07 mockup):
+    - Left sidebar: SetupPanel with Team Config, Sim Params, Assumptions
+    - Main content area (right):
+      - Top: SimulationPanel with tabbed interface and Run button
+      - Bottom: ResultsPanel with summary and detailed statistics
 
     All panels are resizable using PanedWindow dividers.
     """
@@ -51,7 +51,7 @@ class MainDashboard(ttk.Frame):
         self.sim_runner = sim_runner
 
         # State tracking
-        self.lineup_panels: List[LineupPanel] = []
+        self.simulation_panels: List[SimulationPanel] = []
         self.compare_mode = False
         self.roster: List[Player] = []
         self.team_data = None
@@ -60,82 +60,87 @@ class MainDashboard(ttk.Frame):
         self._prompt_session_restore()
 
     def _create_layout(self):
-        """Create main dashboard layout with PanedWindow structure."""
-        # Main vertical PanedWindow: Setup at top, content below
-        self.main_paned = ttk.PanedWindow(self, orient=tk.VERTICAL)
+        """Create main dashboard layout with left sidebar structure."""
+        # Main horizontal PanedWindow: Sidebar left, content right
+        self.main_paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         self.main_paned.pack(fill=tk.BOTH, expand=True)
 
-        # Top pane: Setup panel (collapsible)
+        # Left sidebar: Setup panel
         self.setup_panel = SetupPanel(self.main_paned)
         self.setup_panel.set_data_loaded_callback(self._on_data_loaded)
         self.main_paned.add(self.setup_panel, weight=0)
 
-        # Bottom pane: Content horizontal PanedWindow
-        self.content_paned = ttk.PanedWindow(self.main_paned, orient=tk.HORIZONTAL)
+        # Right content: Vertical PanedWindow for simulation + results
+        self.content_paned = ttk.PanedWindow(self.main_paned, orient=tk.VERTICAL)
         self.main_paned.add(self.content_paned, weight=1)
 
-        # Initial single lineup panel
-        lineup_panel = self._create_lineup_panel()
-        self.content_paned.add(lineup_panel, weight=1)
+        # Top: Simulation panel with tabs
+        simulation_panel = self._create_simulation_panel()
+        self.content_paned.add(simulation_panel, weight=1)
 
-        # Results panel
-        self.results_panel = ResultsPanel(self.content_paned, results_manager=self.results_manager)
+        # Bottom: Results panel (compact mode for horizontal layout)
+        self.results_panel = ResultsPanel(
+            self.content_paned,
+            results_manager=self.results_manager,
+            compact=True
+        )
         self.content_paned.add(self.results_panel, weight=1)
 
-    def _create_lineup_panel(self) -> LineupPanel:
+    def _create_simulation_panel(self) -> SimulationPanel:
         """
-        Create a lineup panel with callbacks.
+        Create a simulation panel with callbacks.
 
         Returns:
-            Configured LineupPanel instance
+            Configured SimulationPanel instance
         """
         # Only first panel gets compare button
-        on_compare = self.toggle_compare_mode if len(self.lineup_panels) == 0 else None
+        on_compare = self.toggle_compare_mode if len(self.simulation_panels) == 0 else None
 
-        panel = LineupPanel(
+        panel = SimulationPanel(
             self.content_paned,
             on_run=lambda: self._run_simulation(panel),
             on_compare=on_compare
         )
-        self.lineup_panels.append(panel)
+        self.simulation_panels.append(panel)
 
         # Load roster data if available
         if self.roster:
-            panel.lineup_builder.load_data(self.roster, self.team_data)
+            panel.load_roster_data(self.roster, self.team_data)
 
         return panel
 
     def toggle_compare_mode(self):
-        """Toggle between single lineup and comparison mode.
+        """Toggle between single simulation panel and comparison mode.
 
-        Creates/destroys second lineup panel following proper widget lifecycle
+        Creates/destroys second simulation panel following proper widget lifecycle
         (forget then destroy) to prevent memory leaks.
         """
         self.compare_mode = not self.compare_mode
 
         if self.compare_mode:
-            # Add second lineup panel
-            panel = self._create_lineup_panel()
-            # Insert between first lineup and results panel
+            # Add second simulation panel
+            panel = self._create_simulation_panel()
+            # Insert between first panel and results
+            # Since content_paned is now vertical, insert at position 1
             self.content_paned.insert(1, panel, weight=1)
         else:
-            # Remove second lineup panel
-            if len(self.lineup_panels) > 1:
-                panel = self.lineup_panels[1]
+            # Remove second simulation panel
+            if len(self.simulation_panels) > 1:
+                panel = self.simulation_panels[1]
                 # Proper widget destruction (RESEARCH.md Pitfall 1)
                 self.content_paned.forget(panel)  # Remove from paned window
                 panel.destroy()  # Free memory
-                self.lineup_panels.remove(panel)  # Clear tracking reference
+                self.simulation_panels.remove(panel)  # Clear tracking reference
 
-    def _run_simulation(self, lineup_panel: LineupPanel):
+    def _run_simulation(self, simulation_panel: SimulationPanel):
         """
-        Run simulation for a specific lineup panel.
+        Run simulation for a specific simulation panel.
 
         Args:
-            lineup_panel: LineupPanel that triggered the run
+            simulation_panel: SimulationPanel that triggered the run
         """
         # Get lineup data
-        lineup_data = lineup_panel.get_lineup_data()
+        lineup_data = simulation_panel.get_lineup_data()
 
         # Validate lineup is complete
         if not lineup_data or not all(lineup_data):
@@ -154,11 +159,11 @@ class MainDashboard(ttk.Frame):
 
         # Update progress indicator
         def progress_callback(current: int, total: int):
-            lineup_panel.update_progress(current, total)
+            simulation_panel.update_progress(current, total)
 
         # Completion callback
         def complete_callback(results: Optional[Dict[str, Any]]):
-            self._on_simulation_complete(results, lineup_panel)
+            self._on_simulation_complete(results, simulation_panel)
 
         # Start simulation in thread
         self.sim_runner.run_in_thread(
@@ -168,16 +173,16 @@ class MainDashboard(ttk.Frame):
             complete_callback=complete_callback
         )
 
-    def _on_simulation_complete(self, results: Optional[Dict[str, Any]], lineup_panel: LineupPanel):
+    def _on_simulation_complete(self, results: Optional[Dict[str, Any]], simulation_panel: SimulationPanel):
         """
         Handle simulation completion.
 
         Args:
             results: Results dictionary from simulation, or None if stopped/error
-            lineup_panel: LineupPanel that ran the simulation
+            simulation_panel: SimulationPanel that ran the simulation
         """
         # Hide progress indicator
-        lineup_panel.hide_progress()
+        simulation_panel.hide_progress()
 
         if results is None:
             # Simulation was stopped
@@ -216,19 +221,29 @@ class MainDashboard(ttk.Frame):
         raw_data = results.get('raw_data', {})
         distribution = raw_data.get('season_runs', [])
 
+        # Extract CI from ci_95 tuple/list
+        ci_95 = runs.get('ci_95', (0, 0))
+        ci_lower = ci_95[0] if ci_95 else 0
+        ci_upper = ci_95[1] if ci_95 else 0
+
+        # Extract percentiles from nested dict
+        percentiles = runs.get('percentiles', {})
+        p25 = percentiles.get('25th')
+        p75 = percentiles.get('75th')
+
         # Build normalized result
         normalized = {
             'mean': runs.get('mean', 0),
             'std': runs.get('std', 0),
-            'ci_lower': runs.get('ci_lower', 0),
-            'ci_upper': runs.get('ci_upper', 0),
+            'ci_lower': ci_lower,
+            'ci_upper': ci_upper,
             'iterations': summary.get('n_simulations', 0),
             'distribution': distribution,
             'min': runs.get('min'),
             'max': runs.get('max'),
             'median': runs.get('median'),
-            'p25': runs.get('p25'),
-            'p75': runs.get('p75'),
+            'p25': p25,
+            'p75': p75,
             # New metrics (04-02)
             'win_probability': summary.get('win_probability'),
             'lob_per_game': summary.get('lob_per_game'),
@@ -248,9 +263,9 @@ class MainDashboard(ttk.Frame):
         self.roster = roster
         self.team_data = team_data
 
-        # Load data into all existing lineup panels
-        for panel in self.lineup_panels:
-            panel.lineup_builder.load_data(roster, team_data)
+        # Load data into all existing simulation panels
+        for panel in self.simulation_panels:
+            panel.load_roster_data(roster, team_data)
 
     def get_dashboard_state(self) -> Dict[str, Any]:
         """
@@ -258,18 +273,26 @@ class MainDashboard(ttk.Frame):
 
         Returns:
             Dictionary containing:
-                - setup_collapsed: Whether setup panel is collapsed
+                - setup_collapsed: Whether setup panel assumptions are collapsed
                 - compare_mode: Whether compare mode is active
-                - lineup_panels: List of lineup data from each panel
+                - simulation_panels: List of lineup data from each panel (player names, JSON-serializable)
                 - paned_positions: Sash positions for resizable panes
         """
+        # Convert Player objects to names for JSON serialization
+        serialized_lineups = []
+        for panel in self.simulation_panels:
+            lineup = panel.get_lineup_data()
+            # Convert List[Optional[Player]] to List[Optional[str]]
+            names = [p.name if p is not None else None for p in lineup]
+            serialized_lineups.append(names)
+
         state = {
             'setup_collapsed': self.setup_panel.assumptions_frame.collapsed,
             'compare_mode': self.compare_mode,
-            'lineup_panels': [panel.get_lineup_data() for panel in self.lineup_panels],
+            'simulation_panels': serialized_lineups,
             'paned_positions': {
-                'main_vertical': self.main_paned.sashpos(0),
-                'content_horizontal': self.content_paned.sashpos(0)
+                'main_horizontal': self.main_paned.sashpos(0),  # Sidebar width
+                'content_vertical': self.content_paned.sashpos(0)  # Simulation vs results split
             }
         }
 
@@ -308,15 +331,26 @@ class MainDashboard(ttk.Frame):
         if state.get('compare_mode') and not self.compare_mode:
             self.toggle_compare_mode()
 
-        # Restore lineup data
-        lineup_data = state.get('lineup_panels', [])
-        for i, data in enumerate(lineup_data):
-            if i < len(self.lineup_panels):
-                self.lineup_panels[i].set_lineup_data(data)
+        # Restore lineup data (convert player names back to Player objects)
+        # Support both old 'lineup_panels' and new 'simulation_panels' keys
+        lineup_data = state.get('simulation_panels', state.get('lineup_panels', []))
+        if self.roster:
+            # Build name->Player lookup
+            player_lookup = {p.name: p for p in self.roster}
+            for i, names in enumerate(lineup_data):
+                if i < len(self.simulation_panels) and names:
+                    # Convert List[Optional[str]] back to List[Optional[Player]]
+                    lineup = [player_lookup.get(name) if name else None for name in names]
+                    self.simulation_panels[i].set_lineup_data(lineup)
 
         # Restore paned positions
         positions = state.get('paned_positions', {})
-        if 'main_vertical' in positions:
+        if 'main_horizontal' in positions:
+            self.main_paned.sashpos(0, positions['main_horizontal'])
+        if 'content_vertical' in positions:
+            self.content_paned.sashpos(0, positions['content_vertical'])
+        # Legacy support for old position keys
+        elif 'main_vertical' in positions:
             self.main_paned.sashpos(0, positions['main_vertical'])
         if 'content_horizontal' in positions:
             self.content_paned.sashpos(0, positions['content_horizontal'])
