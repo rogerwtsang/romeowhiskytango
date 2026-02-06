@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from src.gui.dashboard import MainDashboard
 from src.gui.utils import SimulationRunner, ConfigManager, ResultsManager
+from src.gui.themes import apply_dark_triadic_theme
 
 
 class MonteCarloBaseballGUI:
@@ -141,9 +142,8 @@ def main():
     """Main entry point."""
     root = tk.Tk()
 
-    # Configure ttk style
-    style = ttk.Style()
-    style.theme_use('clam')  # Use modern theme
+    # Apply dark triadic theme
+    apply_dark_triadic_theme(root)
 
     # Create and run application
     app = MonteCarloBaseballGUI(root)
