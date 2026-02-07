@@ -21,19 +21,21 @@ class CollapsibleFrame(ttk.Frame):
         ttk.Label(content, text="Content").pack()
     """
 
-    def __init__(self, parent, text: str = "", **kwargs):
+    def __init__(self, parent, text: str = "", collapsed: bool = False, **kwargs):
         """
         Initialize collapsible frame.
 
         Args:
             parent: Parent widget
             text: Section title displayed in header
+            collapsed: If True, start collapsed; if False, start expanded (default)
             **kwargs: Additional frame arguments
         """
         super().__init__(parent, **kwargs)
 
-        self.collapsed = False
+        self.collapsed = False  # Always start expanded, then toggle if needed
         self._text = text
+        self._start_collapsed = collapsed  # Store for deferred toggle
 
         # Header with toggle button
         self.header = ttk.Frame(self, relief=tk.RAISED, borderwidth=1)
@@ -50,6 +52,10 @@ class CollapsibleFrame(ttk.Frame):
         # Content frame
         self.content = ttk.Frame(self, padding=10, relief=tk.SUNKEN, borderwidth=1)
         self.content.pack(fill=tk.BOTH, expand=True)
+
+        # If requested to start collapsed, toggle after widget creation
+        if self._start_collapsed:
+            self.toggle()
 
     def toggle(self) -> None:
         """Toggle content visibility.
