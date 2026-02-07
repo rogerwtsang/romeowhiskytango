@@ -102,13 +102,18 @@ class SetupPanel(ttk.Frame):
         self.season_spin = ttk.Spinbox(team_frame, from_=2015, to=2025, width=10)
         self.season_spin.grid(row=1, column=1, sticky='w', pady=5, padx=(10, 0))
 
+        # Team nickname (optional)
+        ttk.Label(team_frame, text="Nickname (optional):").grid(row=2, column=0, sticky='w', pady=5)
+        self.team_nickname = ttk.Entry(team_frame, width=30)
+        self.team_nickname.grid(row=2, column=1, sticky='w', pady=5, padx=(10, 0))
+
         # Load data button
         self.load_btn = ttk.Button(team_frame, text="Load Team Data", command=self._load_team_data)
-        self.load_btn.grid(row=2, column=0, columnspan=2, pady=10)
+        self.load_btn.grid(row=3, column=0, columnspan=2, pady=10)
 
         # Data status label
         self.status_label = ttk.Label(team_frame, text="No data loaded", foreground='gray')
-        self.status_label.grid(row=3, column=0, columnspan=2, pady=5)
+        self.status_label.grid(row=4, column=0, columnspan=2, pady=5)
 
         # Simulation Parameters Section
         sim_frame = ttk.LabelFrame(self, text="Simulation Parameters", padding=10)
@@ -764,6 +769,26 @@ class SetupPanel(ttk.Frame):
         """
         selection = self.team_combo.get()
         return selection.split(' - ')[0]
+
+    def get_team_full_name(self) -> str:
+        """Get selected team full name.
+
+        Returns:
+            Full team name (e.g., 'Toronto Blue Jays')
+        """
+        code = self.get_team_code()
+        for team_code, full_name in MLB_TEAMS:
+            if team_code == code:
+                return full_name
+        return code  # Fallback to code
+
+    def get_team_nickname(self) -> str:
+        """Get user-entered team nickname.
+
+        Returns:
+            Team nickname, empty string if not set
+        """
+        return self.team_nickname.get().strip()
 
     def get_config(self) -> dict:
         """Get current configuration as dict.

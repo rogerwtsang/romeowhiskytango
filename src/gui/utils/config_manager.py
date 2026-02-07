@@ -2,7 +2,8 @@
 
 import json
 import os
-from typing import Dict, Any, Optional
+from datetime import datetime
+from typing import Dict, Any, Optional, List
 from pathlib import Path
 
 
@@ -193,3 +194,139 @@ class ConfigManager:
             return True
         except (FileNotFoundError, json.JSONDecodeError):
             return False
+
+    # =========================================================================
+    # Team-specific lineup persistence (05-04)
+    # =========================================================================
+
+    def _get_team_lineups_file(self, team_code: str, season: int) -> Path:
+        """Get path to team-specific lineups file.
+
+        Args:
+            team_code: Three-letter team code (e.g., "TOR")
+            season: Season year
+
+        Returns:
+            Path to lineups JSON file
+        """
+        return self.lineups_dir / f"{team_code.lower()}_{season}.json"
+
+    def save_team_lineup(
+        self,
+        team_code: str,
+        season: int,
+        lineup_name: str,
+        player_names: List[Optional[str]],
+    ) -> bool:
+        """
+        Save a lineup for a specific team/season.
+
+        Args:
+            team_code: Three-letter team code (e.g., "TOR")
+            season: Season year
+            lineup_name: Name for this lineup
+            player_names: List of player names (9 slots, None for empty)
+
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            lineups_file = self._get_team_lineups_file(team_code, season)
+
+            # Load existing lineups
+            existing: Dict[str, Any] = {}
+            if lineups_file.exists():
+                with open(lineups_file, "r") as f:
+                    existing = json.load(f)
+
+            # Add/update lineup
+            existing[lineup_name] = {
+                "players": player_names,
+                "created_at": datetime.now().isoformat(),
+            }
+
+            # Save back
+            with open(lineups_file, "w") as f:
+                json.dump(existing, f, indent=2)
+
+            return True
+        except Exception as e:
+            print(f"Error saving team lineup: {e}")
+            return False
+
+    def load_team_lineups(self, team_code: str, season: int) -> List[Dict[str, Any]]:
+        """
+        Load all lineups for a specific team/season.
+
+        Args:
+            team_code: Three-letter team code
+            season: Season year
+
+        Returns:
+            List of lineup dictionaries with 'name', 'players', 'created_at'
+        """
+        try:
+            lineups_file = self._get_team_lineups_file(team_code, season)
+
+            if not lineups_file.exists():
+                return []
+
+            with open(lineups_file, "r") as f:
+                data = json.load(f)
+
+            # Convert dict to list of lineup dicts
+            return [
+                {"name": name, **lineup_data}
+                for name, lineup_data in data.items()
+            ]
+        except Exception as e:
+            print(f"Error loading team lineups: {e}")
+            return []
+
+    def delete_team_lineup(self, team_code: str, season: int, lineup_name: str) -> bool:
+        """
+        Delete a lineup for a specific team/season.
+
+        Args:
+            team_code: Three-letter team code
+            season: Season year
+            lineup_name: Name of lineup to delete
+
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            lineups_file = self._get_team_lineups_file(team_code, season)
+
+            if not lineups_file.exists():
+                return False
+
+            with open(lineups_file, "r") as f:
+                data = json.load(f)
+
+            if lineup_name not in data:
+                return False
+
+            del data[lineup_name]
+
+            with open(lineups_file, "w") as f:
+                json.dump(data, f, indent=2)
+
+            return True
+        except Exception as e:
+            print(f"Error deleting team lineup: {e}")
+            return False
+
+    def get_team_lineup_names(self, team_code: str, season: int) -> List[str]:
+        """
+        Get list of lineup names for a team/season.
+
+        Args:
+            team_code: Three-letter team code
+            season: Season year
+
+        Returns:
+            List of lineup names
+        """
+        lineups = self.load_team_lineups(team_code, season)
+        return [lineup["name"] for lineup in lineups]

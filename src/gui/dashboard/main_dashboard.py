@@ -13,6 +13,7 @@ from src.gui.dashboard.results_panel import ResultsPanel
 from src.gui.utils.config_manager import ConfigManager
 from src.gui.utils.results_manager import ResultsManager
 from src.gui.utils.simulation_runner import SimulationRunner
+from src.gui.models.team_roster import Team, Roster, Lineup
 from src.models.player import Player
 
 
@@ -55,6 +56,7 @@ class MainDashboard(ttk.Frame):
         self.compare_mode = False
         self.roster: List[Player] = []
         self.team_data = None
+        self.current_team: Optional[Team] = None
 
         self._create_layout()
         self._prompt_session_restore()
@@ -105,13 +107,24 @@ class MainDashboard(ttk.Frame):
         panel = SimulationPanel(
             self.content_paned,
             on_run=lambda: self._run_simulation(panel),
-            on_compare=on_compare
+            on_compare=on_compare,
+            on_save_lineup=lambda name: self._save_lineup(panel, name),
+            on_load_lineup=lambda name: self._load_lineup(panel, name),
+            on_delete_lineup=lambda name: self._delete_lineup(panel, name)
         )
         self.simulation_panels.append(panel)
 
         # Load roster data if available
         if self.roster:
             panel.load_roster_data(self.roster, self.team_data)
+
+        # Load lineup names if team is set
+        if self.current_team:
+            names = self.config_manager.get_team_lineup_names(
+                self.current_team.code,
+                self.current_team.season
+            )
+            panel.set_lineup_names(names)
 
         return panel
 
@@ -269,9 +282,114 @@ class MainDashboard(ttk.Frame):
         self.roster = roster
         self.team_data = team_data
 
+        # Create Team object
+        team_code = self.setup_panel.get_team_code()
+        full_name = self.setup_panel.get_team_full_name()
+        season = int(self.setup_panel.get_config()['season'])
+        nickname = self.setup_panel.get_team_nickname()
+
+        self.current_team = Team(
+            code=team_code,
+            full_name=full_name,
+            season=season,
+            nickname=nickname,
+            players=roster
+        )
+
         # Load data into all existing simulation panels
         for panel in self.simulation_panels:
             panel.load_roster_data(roster, team_data)
+            # Load lineup names for this team
+            names = self.config_manager.get_team_lineup_names(team_code, season)
+            panel.set_lineup_names(names)
+            # Set team display name
+            panel.set_team_display_name(self.current_team.display_name)
+
+    def _save_lineup(self, panel: SimulationPanel, lineup_name: str):
+        """
+        Save lineup from a simulation panel.
+
+        Args:
+            panel: SimulationPanel containing lineup
+            lineup_name: Name to save lineup as
+        """
+        if not self.current_team:
+            messagebox.showwarning("No Team", "Please load a team first")
+            return
+
+        lineup_data = panel.get_lineup_data()
+        player_names = [p.name if p else None for p in lineup_data]
+
+        success = self.config_manager.save_team_lineup(
+            self.current_team.code,
+            self.current_team.season,
+            lineup_name,
+            player_names
+        )
+
+        if success:
+            # Update dropdown in all panels
+            names = self.config_manager.get_team_lineup_names(
+                self.current_team.code,
+                self.current_team.season
+            )
+            for p in self.simulation_panels:
+                p.set_lineup_names(names)
+
+    def _load_lineup(self, panel: SimulationPanel, lineup_name: str):
+        """
+        Load lineup into a simulation panel.
+
+        Args:
+            panel: SimulationPanel to load into
+            lineup_name: Name of lineup to load
+        """
+        if not self.current_team:
+            messagebox.showwarning("No Team", "Please load a team first")
+            return
+
+        lineups = self.config_manager.load_team_lineups(
+            self.current_team.code,
+            self.current_team.season
+        )
+
+        for lineup_dict in lineups:
+            if lineup_dict['name'] == lineup_name:
+                player_names = lineup_dict.get('players', [])
+                # Convert names to Player objects
+                player_lookup = {p.name: p for p in self.roster}
+                lineup = [
+                    player_lookup.get(name) if name else None
+                    for name in player_names
+                ]
+                panel.set_lineup_data(lineup)
+                return
+
+    def _delete_lineup(self, panel: SimulationPanel, lineup_name: str):
+        """
+        Delete a saved lineup.
+
+        Args:
+            panel: SimulationPanel (unused but needed for callback signature)
+            lineup_name: Name of lineup to delete
+        """
+        if not self.current_team:
+            return
+
+        success = self.config_manager.delete_team_lineup(
+            self.current_team.code,
+            self.current_team.season,
+            lineup_name
+        )
+
+        if success:
+            # Update dropdown in all panels
+            names = self.config_manager.get_team_lineup_names(
+                self.current_team.code,
+                self.current_team.season
+            )
+            for p in self.simulation_panels:
+                p.set_lineup_names(names)
 
     def get_dashboard_state(self) -> Dict[str, Any]:
         """
