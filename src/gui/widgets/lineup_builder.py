@@ -4,10 +4,15 @@ import tkinter as tk
 from tkinter import ttk
 from typing import List, Optional, Dict, Any
 from src.models.player import Player
+from src.gui.widgets.lineup_treeview import LineupTreeview
 
 
 class LineupBuilder(ttk.Frame):
-    """Widget for building and managing 9-player lineup."""
+    """Widget for building and managing 9-player lineup.
+
+    Uses LineupTreeview for the batting order display with spreadsheet columns
+    and drag-and-drop reordering.
+    """
 
     def __init__(self, parent, **kwargs):
         """
@@ -19,7 +24,6 @@ class LineupBuilder(ttk.Frame):
         """
         super().__init__(parent, **kwargs)
 
-        self.lineup: List[Optional[Player]] = [None] * 9
         self.constraints: List[Dict[str, Any]] = []
         self.locked_positions: set = set()  # Positions with constraints
         self.roster: List[Player] = []
@@ -29,7 +33,7 @@ class LineupBuilder(ttk.Frame):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)  # Roster panel (left)
         self.columnconfigure(1, weight=0)  # Separator
-        self.columnconfigure(2, weight=1)  # Lineup panel (right)
+        self.columnconfigure(2, weight=2)  # Lineup panel (right) - wider for treeview
 
         # Create left panel: Available Players
         self._create_roster_panel()
@@ -38,7 +42,7 @@ class LineupBuilder(ttk.Frame):
         separator = ttk.Separator(self, orient='vertical')
         separator.grid(row=0, column=1, sticky='ns', padx=10)
 
-        # Create right panel: Batting Order
+        # Create right panel: Batting Order with Treeview
         self._create_lineup_panel()
 
         # Initial refresh
@@ -52,6 +56,7 @@ class LineupBuilder(ttk.Frame):
         # Configure grid weights
         roster_frame.rowconfigure(0, weight=0)  # Label
         roster_frame.rowconfigure(1, weight=1)  # Listbox
+        roster_frame.rowconfigure(2, weight=0)  # Instruction
         roster_frame.columnconfigure(0, weight=1)
 
         # Label
@@ -88,55 +93,25 @@ class LineupBuilder(ttk.Frame):
         ).grid(row=2, column=0, sticky='w', pady=(5, 0))
 
     def _create_lineup_panel(self):
-        """Create the lineup (batting order) panel on the right."""
+        """Create the lineup (batting order) panel on the right using LineupTreeview."""
         lineup_frame = ttk.Frame(self)
         lineup_frame.grid(row=0, column=2, sticky='nsew')
 
         # Configure grid weights
         lineup_frame.rowconfigure(0, weight=0)  # Label
-        lineup_frame.rowconfigure(1, weight=1)  # Listbox + buttons
+        lineup_frame.rowconfigure(1, weight=1)  # Treeview
         lineup_frame.columnconfigure(0, weight=1)
-        lineup_frame.columnconfigure(1, weight=0)  # Buttons
 
         # Label
         ttk.Label(
             lineup_frame,
             text="Batting Order",
             font=('TkDefaultFont', 10, 'bold')
-        ).grid(row=0, column=0, columnspan=2, sticky='w', pady=(0, 5))
+        ).grid(row=0, column=0, sticky='w', pady=(0, 5))
 
-        # Frame for listbox and scrollbar
-        list_frame = ttk.Frame(lineup_frame)
-        list_frame.grid(row=1, column=0, sticky='nsew', padx=(0, 5))
-        list_frame.rowconfigure(0, weight=1)
-        list_frame.columnconfigure(0, weight=1)
-
-        # Create lineup listbox
-        self.listbox = tk.Listbox(list_frame, height=9, font=('TkDefaultFont', 10))
-        self.listbox.grid(row=0, column=0, sticky='nsew')
-
-        # Create scrollbar
-        scrollbar = ttk.Scrollbar(list_frame, orient='vertical', command=self.listbox.yview)
-        self.listbox.configure(yscrollcommand=scrollbar.set)
-        scrollbar.grid(row=0, column=1, sticky='ns')
-
-        # Create control buttons
-        btn_frame = ttk.Frame(lineup_frame)
-        btn_frame.grid(row=1, column=1, sticky='ns')
-
-        self.up_btn = ttk.Button(btn_frame, text="▲ Move Up", command=self.move_up, width=12)
-        self.up_btn.pack(pady=2)
-
-        self.down_btn = ttk.Button(btn_frame, text="▼ Move Down", command=self.move_down, width=12)
-        self.down_btn.pack(pady=2)
-
-        self.remove_btn = ttk.Button(btn_frame, text="✖ Remove", command=self.remove_player, width=12)
-        self.remove_btn.pack(pady=2)
-
-        ttk.Separator(btn_frame, orient='horizontal').pack(fill='x', pady=10)
-
-        self.clear_btn = ttk.Button(btn_frame, text="Clear All", command=self.clear_lineup, width=12)
-        self.clear_btn.pack(pady=2)
+        # Use LineupTreeview for the batting order display
+        self.lineup_treeview = LineupTreeview(lineup_frame)
+        self.lineup_treeview.grid(row=1, column=0, sticky='nsew')
 
     def _on_roster_double_click(self, event):
         """Handle double-click on roster player to add to lineup."""
@@ -152,14 +127,18 @@ class LineupBuilder(ttk.Frame):
                 self.refresh()
 
     def refresh(self):
-        """Refresh both the roster and lineup listbox displays."""
+        """Refresh both the roster and lineup displays."""
+        # Get current lineup from treeview
+        lineup = self.lineup_treeview.get_lineup()
+
         # Refresh roster listbox
         self.roster_listbox.delete(0, tk.END)
         for player in self.roster:
             # Show if player is already in lineup
-            in_lineup = player in self.lineup
+            in_lineup = player in lineup
             prefix = "[IN LINEUP] " if in_lineup else ""
-            pos_display = f"[{player.position}] " if player.position else ""
+            pos_abbrev = player.position.abbrev if player.position else ""
+            pos_display = f"[{pos_abbrev}] " if pos_abbrev else ""
             text = f"{prefix}{pos_display}{player.name} ({player.ba:.3f}/{player.obp:.3f}/{player.slg:.3f})"
             self.roster_listbox.insert(tk.END, text)
 
@@ -167,24 +146,6 @@ class LineupBuilder(ttk.Frame):
             if in_lineup:
                 idx = self.roster_listbox.size() - 1
                 self.roster_listbox.itemconfig(idx, foreground='gray')
-
-        # Refresh lineup listbox
-        self.listbox.delete(0, tk.END)
-
-        for i, player in enumerate(self.lineup):
-            if player is None:
-                text = f"{i+1}. (empty)"
-                self.listbox.insert(tk.END, text)
-                self.listbox.itemconfig(i, foreground='gray')
-            else:
-                lock_icon = "🔒 " if i in self.locked_positions else ""
-                pos_display = f"[{player.position}] " if player.position else ""
-                text = f"{i+1}. {lock_icon}{pos_display}{player.name} ({player.ba:.3f}/{player.obp:.3f}/{player.slg:.3f})"
-                self.listbox.insert(tk.END, text)
-
-                # Highlight locked positions
-                if i in self.locked_positions:
-                    self.listbox.itemconfig(i, background='#ffffcc')
 
     def add_player(self, player: Player, position: Optional[int] = None) -> bool:
         """
@@ -197,89 +158,53 @@ class LineupBuilder(ttk.Frame):
         Returns:
             True if player was added, False otherwise
         """
-        # Check if player already in lineup
-        if player in self.lineup:
-            return False
-
-        if position is not None:
-            # Add to specific position
-            if 0 <= position < 9:
-                self.lineup[position] = player
-                self.refresh()
-                return True
-            return False
-        else:
-            # Find first empty slot
-            try:
-                idx = self.lineup.index(None)
-                self.lineup[idx] = player
-                self.refresh()
-                return True
-            except ValueError:
-                # Lineup is full
-                return False
+        result = self.lineup_treeview.add_player(player, position)
+        if result:
+            self.refresh()
+        return result
 
     def remove_player(self):
         """Remove the selected player from lineup."""
-        selection = self.listbox.curselection()
-        if not selection:
+        idx = self.lineup_treeview.get_selected_index()
+        if idx is not None and idx in self.locked_positions:
             return
-
-        idx = selection[0]
-
-        # Don't allow removing locked positions
-        if idx in self.locked_positions:
-            return
-
-        self.lineup[idx] = None
+        self.lineup_treeview.remove_selected()
         self.refresh()
 
     def move_up(self):
         """Move selected player up in batting order."""
-        selection = self.listbox.curselection()
-        if not selection or selection[0] == 0:
-            return
-
-        idx = selection[0]
-
-        # Don't allow moving locked positions
-        if idx in self.locked_positions or (idx-1) in self.locked_positions:
-            return
-
-        # Swap with previous
-        self.lineup[idx], self.lineup[idx-1] = self.lineup[idx-1], self.lineup[idx]
+        idx = self.lineup_treeview.get_selected_index()
+        if idx is not None:
+            if idx in self.locked_positions or (idx - 1) in self.locked_positions:
+                return
+        self.lineup_treeview.move_up()
         self.refresh()
-        self.listbox.selection_clear(0, tk.END)
-        self.listbox.selection_set(idx-1)
 
     def move_down(self):
         """Move selected player down in batting order."""
-        selection = self.listbox.curselection()
-        if not selection or selection[0] == 8:
-            return
-
-        idx = selection[0]
-
-        # Don't allow moving locked positions
-        if idx in self.locked_positions or (idx+1) in self.locked_positions:
-            return
-
-        # Swap with next
-        self.lineup[idx], self.lineup[idx+1] = self.lineup[idx+1], self.lineup[idx]
+        idx = self.lineup_treeview.get_selected_index()
+        if idx is not None:
+            if idx in self.locked_positions or (idx + 1) in self.locked_positions:
+                return
+        self.lineup_treeview.move_down()
         self.refresh()
-        self.listbox.selection_clear(0, tk.END)
-        self.listbox.selection_set(idx+1)
 
     def clear_lineup(self):
         """Clear the entire lineup (except locked positions)."""
-        for i in range(9):
-            if i not in self.locked_positions:
-                self.lineup[i] = None
+        if not self.locked_positions:
+            self.lineup_treeview.clear_lineup()
+        else:
+            # Selectively clear non-locked positions
+            lineup = self.lineup_treeview.get_lineup()
+            for i in range(9):
+                if i not in self.locked_positions:
+                    lineup[i] = None
+            self.lineup_treeview.set_lineup(lineup)
         self.refresh()
 
     def get_lineup(self) -> List[Optional[Player]]:
         """Get current lineup."""
-        return self.lineup.copy()
+        return self.lineup_treeview.get_lineup()
 
     def set_lineup(self, lineup: List[Optional[Player]]):
         """
@@ -288,10 +213,7 @@ class LineupBuilder(ttk.Frame):
         Args:
             lineup: List of 9 Player objects (or None for empty slots)
         """
-        if len(lineup) != 9:
-            raise ValueError("Lineup must have exactly 9 slots")
-
-        self.lineup = lineup.copy()
+        self.lineup_treeview.set_lineup(lineup)
         self.refresh()
 
     def apply_constraints(self, constraints: List[Dict[str, Any]]):
@@ -315,7 +237,8 @@ class LineupBuilder(ttk.Frame):
 
     def is_full(self) -> bool:
         """Check if lineup has all 9 players."""
-        return all(player is not None for player in self.lineup)
+        lineup = self.lineup_treeview.get_lineup()
+        return all(player is not None for player in lineup)
 
     def is_valid(self) -> bool:
         """Check if lineup is valid (all 9 slots filled)."""
@@ -334,3 +257,14 @@ class LineupBuilder(ttk.Frame):
         self.roster = roster
         self.team_data = team_data
         self.refresh()
+
+    # Legacy property for backward compatibility
+    @property
+    def lineup(self) -> List[Optional[Player]]:
+        """Get current lineup (legacy property for backward compatibility)."""
+        return self.lineup_treeview.get_lineup()
+
+    @lineup.setter
+    def lineup(self, value: List[Optional[Player]]):
+        """Set lineup (legacy property for backward compatibility)."""
+        self.lineup_treeview.set_lineup(value)
