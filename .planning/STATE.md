@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-10)
 ## Current Position
 
 Phase: 5 of 7 (Workflow Polish)
-Plan: 4 of 4 (Team/Roster/Lineup Hierarchy) - COMPLETE
+Plan: 5 of 5 (Visuals Tab) - COMPLETE
 Status: Phase complete
-Last activity: 2026-02-07 — Completed 05-04-PLAN.md (Team/Roster/Lineup hierarchy)
+Last activity: 2026-02-07 — Completed 05-05-PLAN.md (Visuals Tab with comprehensive charts)
 
-Progress: ████████████████████ 100% (21/21 plans across phases)
+Progress: ████████████████████ 100% (22/22 plans across phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
-- Average duration: 3.0 min
-- Total execution time: 0.9 hours
+- Total plans completed: 19
+- Average duration: 3.1 min
+- Total execution time: 1.0 hours
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: ████████████████████ 100% (21/
 | 03-gui-foundation | 7/7 | 25 min | 3.6 min |
 | 03.1-cleanup-planning-docs | 1/1 | 2.3 min | 2.3 min |
 | 04-results-visualization | 4/4 | 15 min | 3.75 min |
-| 05-workflow-polish | 4/4 | 13 min | 3.25 min |
+| 05-workflow-polish | 5/5 | 19 min | 3.8 min |
 
 **Recent Trend:**
-- Last 3 plans: 3 min, 3 min, 4 min
-- Trend: Consistent 3-4 minute pace for workflow polish
+- Last 3 plans: 3 min, 4 min, 6 min
+- Trend: Consistent pace, Visuals Tab took slightly longer due to scope
 
 ## Accumulated Context
 
@@ -108,6 +108,10 @@ Recent decisions affecting current work:
 - Combobox dropdown for lineup navigation (simple MVP over tree view)
 - Store lineups in {team}_{season}.json files for organization
 - Show team display name in simulation panel title for context
+- Use calculate_axis_lower_bound() for meaningful Y-axis limits on run expectancy
+- Support both raw normalized and percentile rank modes for radar chart
+- Limit distribution overlay to 4 lineups max for visual clarity
+- Move histogram and contributions from ResultsPanel to VisualsPanel for consolidated visualization
 
 ### Roadmap Evolution
 
@@ -130,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-07 21:15:00
-Stopped at: Completed 05-04-PLAN.md (Team/Roster/Lineup hierarchy)
+Last session: 2026-02-07 21:14:24
+Stopped at: Completed 05-05-PLAN.md (Visuals Tab with comprehensive charts)
 Resume file: None
