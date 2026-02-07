@@ -38,15 +38,15 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Audit probability decomposition and hit distribution modeling
-- [ ] 02-02-PLAN.md — Audit baserunning and special events, finalize findings document
+- [x] 02-01-PLAN.md — Audit probability decomposition and hit distribution modeling
+- [x] 02-02-PLAN.md — Audit baserunning and special events, finalize findings document
 
 ### Phase 3: GUI Foundation
 **Goal**: Replace 9-tab structure with consolidated dashboard layout
 **Depends on**: Phase 2
 **Research**: Likely (dashboard layout patterns for Tkinter)
 **Research topics**: Tkinter dashboard patterns, card-based layouts, ttk theming
-**Plans**: 6 plans
+**Plans**: 7 plans
 
 Plans:
 - [x] 03-01-PLAN.md — Create CollapsibleFrame widget foundation
@@ -83,13 +83,22 @@ Plans:
 ### Phase 5: Workflow Polish
 **Goal**: Reduce clicks to run simulation, clean visual hierarchy
 **Depends on**: Phase 4
-**Research**: Unlikely (internal UI refinement)
-**Plans**: TBD
+**Research**: Complete (2026-02-07)
+**Plans**: 5 plans
 
 Focus:
-- Streamline build → run → compare workflow
-- Proper spacing and typography
-- Consistent visual language
+- Responsive window sizing and improved seed control
+- Assumptions section ON by default with explanations
+- Spreadsheet-like lineup panel with drag-and-drop
+- Team/Roster/Lineup hierarchy for lineup management
+- Comprehensive Visuals tab with radar, overlay, run expectancy charts
+
+Plans:
+- [ ] 05-01-PLAN.md — Window sizing, seed control, simulation defaults
+- [ ] 05-02-PLAN.md — Assumptions section enhancement with explanations
+- [ ] 05-03-PLAN.md — Lineup panel redesign with Treeview and drag-and-drop
+- [ ] 05-04-PLAN.md — Team/Roster/Lineup data hierarchy and persistence
+- [ ] 05-05-PLAN.md — Visuals tab with radar, overlay, and run expectancy charts
 
 ### Phase 6: Test Coverage
 **Goal**: Comprehensive test suite for simulation pipeline
@@ -121,6 +130,6 @@ Plans:
 | 3. GUI Foundation | 7/7 | ✓ Complete | 2026-02-06 |
 | 3.1 Cleanup Planning Docs | 1/1 | ✓ Complete | 2026-01-25 |
 | 4. Results Visualization | 4/4 | ✓ Complete | 2026-02-07 |
-| 5. Workflow Polish | 0/TBD | Not started | - |
+| 5. Workflow Polish | 0/5 | Not started | - |
 | 6. Test Coverage | 0/TBD | Not started | - |
 | 7. Season W/L Simulation | 0/1 | Deferred (researched ahead) | - |
