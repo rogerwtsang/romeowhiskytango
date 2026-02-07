@@ -65,6 +65,12 @@ class MainDashboard(ttk.Frame):
         self.main_paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         self.main_paned.pack(fill=tk.BOTH, expand=True)
 
+        # Minimum width for left panel
+        self._min_left_width = 250
+
+        # Bind Configure event to enforce minimum width
+        self.main_paned.bind('<Configure>', self._enforce_min_left_width)
+
         # Left sidebar: Setup panel
         self.setup_panel = SetupPanel(self.main_paned)
         self.setup_panel.set_data_loaded_callback(self._on_data_loaded)
@@ -354,3 +360,19 @@ class MainDashboard(ttk.Frame):
             self.main_paned.sashpos(0, positions['main_vertical'])
         if 'content_horizontal' in positions:
             self.content_paned.sashpos(0, positions['content_horizontal'])
+
+    def _enforce_min_left_width(self, event=None) -> None:
+        """Enforce minimum width on left panel.
+
+        Prevents the setup panel from shrinking below 250px.
+
+        Args:
+            event: Configure event (optional)
+        """
+        try:
+            current_pos = self.main_paned.sashpos(0)
+            if current_pos < self._min_left_width:
+                self.main_paned.sashpos(0, self._min_left_width)
+        except tk.TclError:
+            # Ignore if sash doesn't exist yet (window not fully mapped)
+            pass

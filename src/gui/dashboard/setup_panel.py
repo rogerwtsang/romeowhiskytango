@@ -11,6 +11,7 @@ from src.data.scraper import get_team_batting_stats, prepare_player_stats, load_
 from src.data.processor import prepare_roster
 from src.gui.widgets.collapsible_frame import CollapsibleFrame
 from src.gui.widgets.labeled_slider import LabeledSlider
+from src.gui.widgets.seed_control import SeedControl
 
 
 # MLB team codes with full names
@@ -148,17 +149,8 @@ class SetupPanel(ttk.Frame):
         seed_frame = ttk.Frame(sim_frame)
         seed_frame.grid(row=3, column=1, sticky='w', pady=5, padx=(10, 0))
 
-        self.use_seed_var = tk.BooleanVar(value=True)
-        self.use_seed_check = ttk.Checkbutton(
-            seed_frame,
-            text="Use seed",
-            variable=self.use_seed_var,
-            command=self._on_seed_toggle
-        )
-        self.use_seed_check.pack(side=tk.LEFT)
-
-        self.seed_entry = ttk.Entry(seed_frame, width=10)
-        self.seed_entry.pack(side=tk.LEFT, padx=(10, 0))
+        self.seed_control = SeedControl(seed_frame)
+        self.seed_control.pack(side=tk.LEFT)
 
         # Assumptions Section (Collapsible with Scrollbar)
         self.assumptions_frame = CollapsibleFrame(self, text="Assumptions")
@@ -207,6 +199,81 @@ class SetupPanel(ttk.Frame):
 
         self._create_assumptions_section(self.assumptions_inner_frame)
 
+    def _create_assumption_with_explanation(
+        self,
+        parent: ttk.Frame,
+        text: str,
+        var: tk.BooleanVar,
+        explanation: str,
+        command: Optional[Callable] = None,
+        row: int = 0
+    ) -> ttk.Frame:
+        """Create an assumption checkbox with expandable explanation.
+
+        Args:
+            parent: Parent frame
+            text: Checkbox label text
+            var: BooleanVar for checkbox state
+            explanation: Explanation text shown when expanded
+            command: Optional callback when checkbox toggled
+            row: Grid row position
+
+        Returns:
+            Frame containing checkbox and explanation
+        """
+        # Container frame
+        container = ttk.Frame(parent)
+        container.grid(row=row, column=0, sticky='ew', pady=2)
+        container.columnconfigure(0, weight=1)
+
+        # Checkbox row with info indicator
+        checkbox_frame = ttk.Frame(container)
+        checkbox_frame.grid(row=0, column=0, sticky='w')
+
+        checkbox = ttk.Checkbutton(
+            checkbox_frame,
+            text=text,
+            variable=var,
+            command=command
+        )
+        checkbox.pack(side=tk.LEFT)
+
+        # Info indicator button
+        info_btn = ttk.Label(
+            checkbox_frame,
+            text="(i)",
+            foreground='#6699cc',
+            cursor='hand2'
+        )
+        info_btn.pack(side=tk.LEFT, padx=(5, 0))
+
+        # Explanation label (initially hidden)
+        explanation_label = ttk.Label(
+            container,
+            text=explanation,
+            foreground='gray',
+            wraplength=350,
+            justify='left'
+        )
+        # Not packed initially - hidden
+
+        # Track visibility state
+        explanation_visible = [False]  # Use list for mutable closure
+
+        def toggle_explanation(event=None):
+            if explanation_visible[0]:
+                explanation_label.grid_forget()
+                info_btn.config(foreground='#6699cc')
+            else:
+                explanation_label.grid(row=1, column=0, sticky='w', padx=(20, 0), pady=(2, 5))
+                info_btn.config(foreground='#66cc66')
+            explanation_visible[0] = not explanation_visible[0]
+
+        # Bind click to info indicator
+        info_btn.bind('<Button-1>', toggle_explanation)
+
+        return container
+
     def _create_assumptions_section(self, parent: ttk.Frame) -> None:
         """Create assumptions subsection with baserunning, errors, and distribution settings.
 
@@ -220,12 +287,15 @@ class SetupPanel(ttk.Frame):
 
         # Stolen Bases
         self.enable_sb_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
+        self._create_assumption_with_explanation(
             baserunning_frame,
             text="Enable Stolen Bases",
-            variable=self.enable_sb_var,
-            command=self._on_sb_toggle
-        ).grid(row=0, column=0, sticky='w', pady=5)
+            var=self.enable_sb_var,
+            explanation="Simulates stolen base attempts based on player speed and catcher arm. "
+                       "Attempt frequency scales with player's historical SB rate.",
+            command=self._on_sb_toggle,
+            row=0
+        )
 
         self.sb_scale_frame = ttk.Frame(baserunning_frame)
         self.sb_scale_frame.grid(row=1, column=0, sticky='ew', pady=5)
@@ -495,11 +565,13 @@ class SetupPanel(ttk.Frame):
 
         # Simulation parameters
         self.season_spin.set(config.CURRENT_SEASON)
-        self.n_sims_scale.set(config.N_SIMULATIONS)
-        self.n_sims_entry.insert(0, str(config.N_SIMULATIONS))
+        # Default to 2000 simulations (workflow polish decision)
+        default_sims = 2000
+        self.n_sims_scale.set(default_sims)
+        self.n_sims_entry.insert(0, str(default_sims))
         self.n_games_spin.set(config.N_GAMES_PER_SEASON)
         self.n_innings_spin.set(9)
-        self.seed_entry.insert(0, str(config.RANDOM_SEED))
+        # SeedControl handles its own initial random seed
 
         # Baserunning
         self.enable_sb_var.set(config.ENABLE_STOLEN_BASES)
@@ -581,13 +653,6 @@ class SetupPanel(ttk.Frame):
         except ValueError:
             self.n_sims_entry.delete(0, tk.END)
             self.n_sims_entry.insert(0, str(int(self.n_sims_scale.get())))
-
-    def _on_seed_toggle(self) -> None:
-        """Handle seed checkbox toggle."""
-        if self.use_seed_var.get():
-            self.seed_entry.config(state='normal')
-        else:
-            self.seed_entry.config(state='disabled')
 
     def _on_sb_toggle(self) -> None:
         """Handle stolen bases toggle."""
@@ -703,7 +768,7 @@ class SetupPanel(ttk.Frame):
             'n_iterations': int(self.n_sims_scale.get()),
             'n_games': int(self.n_games_spin.get()),
             'n_innings': int(self.n_innings_spin.get()),
-            'random_seed': int(self.seed_entry.get()) if self.use_seed_var.get() else None,
+            'random_seed': self.seed_control.get_seed(),
             'ENABLE_STOLEN_BASES': self.enable_sb_var.get(),
             'SB_ATTEMPT_SCALE': self.sb_attempt_slider.get(),
             'ENABLE_PROBABILISTIC_BASERUNNING': self.enable_prob_br_var.get(),

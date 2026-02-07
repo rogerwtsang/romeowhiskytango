@@ -25,7 +25,13 @@ class MonteCarloBaseballGUI:
         """Initialize the GUI application."""
         self.root = root
         self.root.title("Monte Carlo Baseball Simulator")
-        self.root.geometry("1200x800")
+
+        # Set window size to half screen width, full screen height
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        window_width = screen_width // 2
+        window_height = screen_height
+        root.geometry(f"{window_width}x{window_height}+0+0")
 
         # Initialize managers
         self.sim_runner = SimulationRunner()
