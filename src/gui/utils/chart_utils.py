@@ -14,10 +14,12 @@ Example:
     create_histogram_with_kde(ax, data, show_mean=True)
 """
 
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict
 import numpy as np
 from numpy.typing import ArrayLike
 from matplotlib.axes import Axes
+from matplotlib.projections.polar import PolarAxes
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 
@@ -331,3 +333,282 @@ def add_effect_size_annotation(
     )
 
     return cohens_d
+
+
+def calculate_axis_lower_bound(data: ArrayLike, percentile: float = 1.0) -> float:
+    """
+    Calculate meaningful lower bound for axis.
+
+    Uses specified percentile minus padding to show all data while
+    avoiding wasted space from zero-origin when values are clustered high.
+
+    Args:
+        data: Array-like data values
+        percentile: Lower percentile to use (default: 1st percentile)
+
+    Returns:
+        Lower bound value for axis (never below 0)
+
+    Example:
+        >>> data = [700, 720, 710, 690, 715]
+        >>> calculate_axis_lower_bound(data)
+        685.5  # Shows all data with 5% padding
+    """
+    data_arr = np.asarray(data)
+
+    if len(data_arr) == 0:
+        return 0.0
+
+    lower = float(np.percentile(data_arr, percentile))
+    data_range = float(np.max(data_arr)) - lower
+
+    # Add 5% padding below minimum
+    return max(0.0, lower - data_range * 0.05)
+
+
+def create_radar_chart(
+    ax: PolarAxes,
+    categories: List[str],
+    values_dict: Dict[str, List[float]],
+    title: Optional[str] = None
+) -> None:
+    """
+    Create radar/spider chart comparing 1-4 players.
+
+    Draws a polar chart with each category as an axis, allowing visual
+    comparison of player profiles across multiple dimensions.
+
+    Args:
+        ax: Matplotlib Axes with polar projection (subplot_kw={'projection': 'polar'})
+        categories: List of stat names (e.g., ['OBP', 'SLG', 'K%', 'ISO', 'BABIP'])
+        values_dict: Dictionary mapping player name to list of values (one per category)
+        title: Optional chart title
+
+    Note:
+        Values should be normalized to same scale (0-1) for fair comparison.
+        Use percentile ranks or min-max normalization before calling.
+
+    Example:
+        >>> fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+        >>> categories = ['OBP', 'SLG', 'K%', 'ISO', 'BABIP']
+        >>> values = {'Guerrero Jr.': [0.8, 0.7, 0.3, 0.6, 0.5]}
+        >>> create_radar_chart(ax, categories, values)
+    """
+    if not categories or not values_dict:
+        ax.text(
+            0.5, 0.5,
+            'No data to display',
+            ha='center',
+            va='center',
+            transform=ax.transAxes,
+            fontsize=12,
+            color='gray'
+        )
+        return
+
+    num_vars = len(categories)
+
+    # Calculate angle for each axis
+    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+    angles += angles[:1]  # Complete the loop
+
+    # Get colors from Set2 colormap
+    colors = plt.cm.Set2(np.linspace(0, 1, len(values_dict)))
+
+    # Plot each player
+    for (name, values), color in zip(values_dict.items(), colors):
+        if len(values) != num_vars:
+            continue  # Skip if values don't match categories
+
+        values_plot = list(values) + [values[0]]  # Complete the loop
+        ax.plot(angles, values_plot, 'o-', linewidth=2, label=name, color=color)
+        ax.fill(angles, values_plot, alpha=0.25, color=color)
+
+    # Set category labels
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(categories)
+
+    # Set radial limits
+    ax.set_ylim(0, 1)
+
+    if title:
+        ax.set_title(title, pad=20)
+
+    # Add legend outside plot
+    ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0))
+
+
+def create_run_expectancy_chart(
+    ax: Axes,
+    slot_data: Dict[int, float],
+    title: Optional[str] = None,
+    use_meaningful_axis: bool = True
+) -> None:
+    """
+    Create bar chart showing runs contributed per batting order position.
+
+    Visualizes run expectancy by slot (1-9) with the highest contributor
+    highlighted for easy identification.
+
+    Args:
+        ax: Matplotlib Axes object to plot on
+        slot_data: Dictionary mapping slot (1-9) to average runs
+        title: Optional chart title
+        use_meaningful_axis: If True, use calculate_axis_lower_bound for Y-axis
+
+    Example:
+        >>> fig, ax = plt.subplots()
+        >>> slot_data = {1: 0.65, 2: 0.58, 3: 0.72, 4: 0.68, 5: 0.55,
+        ...              6: 0.48, 7: 0.42, 8: 0.38, 9: 0.35}
+        >>> create_run_expectancy_chart(ax, slot_data)
+    """
+    if not slot_data:
+        ax.text(
+            0.5, 0.5,
+            'No data to display',
+            ha='center',
+            va='center',
+            transform=ax.transAxes,
+            fontsize=12,
+            color='gray'
+        )
+        ax.set_xticks([])
+        ax.set_yticks([])
+        return
+
+    # Sort by slot number and prepare data
+    slots = sorted(slot_data.keys())
+    values = [slot_data[s] for s in slots]
+
+    # Find highest contributor for highlighting
+    max_idx = values.index(max(values))
+
+    # Create bar colors (highlight max)
+    colors = ['steelblue'] * len(slots)
+    colors[max_idx] = 'coral'
+
+    # Create bar chart
+    bars = ax.bar([str(s) for s in slots], values, color=colors, edgecolor='black', linewidth=0.5)
+
+    # Add value labels on bars
+    for bar, val in zip(bars, values):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.01,
+            f'{val:.2f}',
+            ha='center',
+            va='bottom',
+            fontsize=9
+        )
+
+    # Set labels
+    ax.set_xlabel('Batting Order Position')
+    ax.set_ylabel('Average Runs per Game')
+
+    if title:
+        ax.set_title(title)
+
+    # Use meaningful axis limits if requested
+    if use_meaningful_axis and values:
+        lower_bound = calculate_axis_lower_bound(values)
+        ax.set_ylim(lower_bound, None)
+
+    # Add grid for readability
+    ax.grid(True, alpha=0.3, axis='y')
+
+
+def create_multi_overlay(
+    ax: Axes,
+    data_dict: Dict[str, ArrayLike],
+    bins: int = 30,
+    title: Optional[str] = None
+) -> None:
+    """
+    Overlay multiple distribution histograms for lineup comparison.
+
+    Creates overlaid step histograms with transparency for comparing 2-4
+    lineup distributions. Uses common bin edges for fair comparison and
+    shows mean lines for each distribution.
+
+    Args:
+        ax: Matplotlib Axes object to plot on
+        data_dict: Dictionary mapping label to data array (max 4 lineups)
+        bins: Number of histogram bins (default: 30)
+        title: Optional chart title
+
+    Note:
+        Limited to 4 distributions for visual clarity.
+        Uses common bin edges calculated from all data for fair comparison.
+
+    Example:
+        >>> fig, ax = plt.subplots()
+        >>> data = {
+        ...     'Current': np.random.normal(700, 30, 1000),
+        ...     'Optimized': np.random.normal(720, 25, 1000)
+        ... }
+        >>> create_multi_overlay(ax, data)
+    """
+    if not data_dict:
+        ax.text(
+            0.5, 0.5,
+            'No data to display',
+            ha='center',
+            va='center',
+            transform=ax.transAxes,
+            fontsize=12,
+            color='gray'
+        )
+        ax.set_xticks([])
+        ax.set_yticks([])
+        return
+
+    # Limit to 4 distributions for clarity
+    colors = ['steelblue', 'coral', 'forestgreen', 'darkorchid']
+    items = list(data_dict.items())[:4]
+
+    # Calculate common bin edges from all data
+    all_data = np.concatenate([np.asarray(data) for _, data in items])
+    bin_edges = np.histogram_bin_edges(all_data, bins=bins).tolist()
+
+    # Plot each distribution
+    for i, (label, data) in enumerate(items):
+        data_arr = np.asarray(data)
+        color = colors[i]
+        mean_val = float(np.mean(data_arr))
+
+        # Create step histogram
+        ax.hist(
+            data_arr,
+            bins=bin_edges,
+            alpha=0.4,
+            color=color,
+            edgecolor=color,
+            linewidth=1.5,
+            histtype='stepfilled',
+            label=f"{label} (mean: {mean_val:.1f})"
+        )
+
+        # Add mean line
+        ax.axvline(
+            mean_val,
+            color=color,
+            linestyle='--',
+            linewidth=2,
+            alpha=0.8
+        )
+
+    # Set labels
+    ax.set_xlabel('Runs per Season')
+    ax.set_ylabel('Frequency')
+
+    # Clip x-axis to 0 minimum
+    ax.set_xlim(0, None)
+
+    # Add legend
+    ax.legend()
+
+    # Add grid
+    ax.grid(True, alpha=0.3)
+
+    if title:
+        ax.set_title(title)
