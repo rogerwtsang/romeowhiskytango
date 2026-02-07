@@ -320,12 +320,15 @@ class SetupPanel(ttk.Frame):
 
         # Probabilistic baserunning
         self.enable_prob_br_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
+        self._create_assumption_with_explanation(
             baserunning_frame,
             text="Enable Probabilistic Baserunning",
-            variable=self.enable_prob_br_var,
-            command=self._on_prob_br_toggle
-        ).grid(row=2, column=0, sticky='w', pady=(10, 5))
+            var=self.enable_prob_br_var,
+            explanation="Models runner advancement using real-world probabilities. "
+                       "Without this, runners always advance exactly one base per single.",
+            command=self._on_prob_br_toggle,
+            row=2
+        )
 
         self.br_sliders_frame = ttk.Frame(baserunning_frame)
         self.br_sliders_frame.grid(row=3, column=0, sticky='ew', pady=5)
@@ -368,12 +371,15 @@ class SetupPanel(ttk.Frame):
 
         # Sacrifice Flies
         self.enable_sf_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
+        self._create_assumption_with_explanation(
             baserunning_frame,
             text="Enable Sacrifice Flies",
-            variable=self.enable_sf_var,
-            command=self._on_sf_toggle
-        ).grid(row=4, column=0, sticky='w', pady=(10, 5))
+            var=self.enable_sf_var,
+            explanation="Allows runners on 3rd to score on fly outs with less than 2 outs. "
+                       "Flyout percentage controls how often outs are fly balls.",
+            command=self._on_sf_toggle,
+            row=4
+        )
 
         self.sf_slider_frame = ttk.Frame(baserunning_frame)
         self.sf_slider_frame.grid(row=5, column=0, sticky='ew', pady=5)
@@ -402,12 +408,15 @@ class SetupPanel(ttk.Frame):
         errors_frame.columnconfigure(0, weight=1)
 
         self.enable_errors_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
+        self._create_assumption_with_explanation(
             errors_frame,
             text="Enable Errors & Wild Pitches",
-            variable=self.enable_errors_var,
-            command=self._on_errors_toggle
-        ).grid(row=0, column=0, sticky='w', pady=5)
+            var=self.enable_errors_var,
+            explanation="Adds random errors that advance runners. Error rate controls frequency. "
+                       "Higher rates favor contact-heavy lineups.",
+            command=self._on_errors_toggle,
+            row=0
+        )
 
         self.error_slider_frame = ttk.Frame(errors_frame)
         self.error_slider_frame.grid(row=1, column=0, sticky='ew', pady=5)
