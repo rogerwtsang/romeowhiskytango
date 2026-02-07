@@ -9,6 +9,7 @@ from .summary_card import SummaryCard
 from .comparison_table import ComparisonTable
 from .player_contribution_chart import PlayerContributionChart
 from .optimization_preview import LineupRankingList, LineupDiffView
+from .seed_control import SeedControl
 
 __all__ = [
     'CollapsibleFrame',
@@ -21,4 +22,5 @@ __all__ = [
     'PlayerContributionChart',
     'LineupRankingList',
     'LineupDiffView',
+    'SeedControl',
 ]
