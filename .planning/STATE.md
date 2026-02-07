@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-10)
 ## Current Position
 
 Phase: 5 of 7 (Workflow Polish)
-Plan: 1 of 3 (Window Sizing and Seed Control) - COMPLETE
-Status: In progress
-Last activity: 2026-02-07 — Completed 05-01-PLAN.md (window sizing and seed control)
+Plan: 3 of 3 (Lineup Treeview) - COMPLETE
+Status: Phase complete
+Last activity: 2026-02-07 — Completed 05-03-PLAN.md (lineup treeview with year selection)
 
-Progress: ██████████████████░░ 90% (18/20 plans across phases)
+Progress: ████████████████████ 100% (20/20 plans across phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: 3.0 min
-- Total execution time: 0.8 hours
+- Total execution time: 0.85 hours
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: ██████████████████░░ 90% (18/2
 | 03-gui-foundation | 7/7 | 25 min | 3.6 min |
 | 03.1-cleanup-planning-docs | 1/1 | 2.3 min | 2.3 min |
 | 04-results-visualization | 4/4 | 15 min | 3.75 min |
-| 05-workflow-polish | 1/3 | 3 min | 3 min |
+| 05-workflow-polish | 3/3 | 9 min | 3 min |
 
 **Recent Trend:**
-- Last 3 plans: 4 min, 4 min, 3 min
-- Trend: Consistent pace, workflow polish starting well
+- Last 3 plans: 3 min, 3 min, 3 min
+- Trend: Consistent 3-minute pace for workflow polish
 
 ## Accumulated Context
 
@@ -101,6 +101,10 @@ Recent decisions affecting current work:
 - Lambda callback factories to capture loop variables in closures
 - Text tags for styled output (swap=blue, added=green, removed=red)
 - Compact swap notation (e.g., '3<->4') for simple position swaps in diff view
+- Use ttk.Treeview for spreadsheet-like lineup display (not Listbox)
+- Mouse event bindings for drag-drop (not experimental tkinter.dnd)
+- INSERT behavior on drag-drop: target position, others shift (not swap)
+- Typical slot column shows '--' when games_by_slot data unavailable
 
 ### Roadmap Evolution
 
@@ -123,6 +127,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-07 17:42:53
-Stopped at: Completed 05-01-PLAN.md (window sizing and seed control)
+Last session: 2026-02-07 21:02:13
+Stopped at: Completed 05-03-PLAN.md (lineup treeview with year selection)
 Resume file: None
