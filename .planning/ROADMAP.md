@@ -14,7 +14,7 @@ None
 - [x] **Phase 2: Statistical Robustness** - Audit model assumptions and document findings
 - [x] **Phase 3: GUI Foundation** - Consolidate 9 tabs into focused dashboard structure
 - [x] **Phase 3.1: Cleanup Planning Docs** - Clean up stray/orphan documents, consolidate and recommend removals (INSERTED)
-- [ ] **Phase 4: Results Visualization** - Charts and metrics that communicate at a glance
+- [x] **Phase 4: Results Visualization** - Charts and metrics that communicate at a glance
 - [ ] **Phase 5: Workflow Polish** - Reduce clicks, clean visual hierarchy
 - [ ] **Phase 6: Test Coverage** - Implement 19 stubs + integration tests
 - [ ] **Phase 7: Season W/L Simulation** - Extend to season-level win/loss predictions (DEFERRED - researched ahead)
@@ -75,10 +75,10 @@ Plans:
 Core value delivery: Visual clarity — results easy to understand at a glance
 
 Plans:
-- [ ] 04-01-PLAN.md — Add seaborn dependency, create chart utilities, enhance histogram with KDE
-- [ ] 04-02-PLAN.md — Add win probability, LOB, and RISP metrics to summary display
-- [ ] 04-03-PLAN.md — Create player contribution chart with slot/player toggle
-- [ ] 04-04-PLAN.md — Create optimization preview widgets (ranking list, diff view)
+- [x] 04-01-PLAN.md — Add seaborn dependency, create chart utilities, enhance histogram with KDE
+- [x] 04-02-PLAN.md — Add win probability, LOB, and RISP metrics to summary display
+- [x] 04-03-PLAN.md — Create player contribution chart with slot/player toggle
+- [x] 04-04-PLAN.md — Create optimization preview widgets (ranking list, diff view)
 
 ### Phase 5: Workflow Polish
 **Goal**: Reduce clicks to run simulation, clean visual hierarchy
@@ -120,7 +120,7 @@ Plans:
 | 2. Statistical Robustness | 2/2 | ✓ Complete | - |
 | 3. GUI Foundation | 7/7 | ✓ Complete | 2026-02-06 |
 | 3.1 Cleanup Planning Docs | 1/1 | ✓ Complete | 2026-01-25 |
-| 4. Results Visualization | 2/4 | In Progress | - |
+| 4. Results Visualization | 4/4 | ✓ Complete | 2026-02-07 |
 | 5. Workflow Polish | 0/TBD | Not started | - |
 | 6. Test Coverage | 0/TBD | Not started | - |
 | 7. Season W/L Simulation | 0/1 | Deferred (researched ahead) | - |
