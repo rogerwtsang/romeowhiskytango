@@ -110,7 +110,8 @@ class MainDashboard(ttk.Frame):
             on_compare=on_compare,
             on_save_lineup=lambda name: self._save_lineup(panel, name),
             on_load_lineup=lambda name: self._load_lineup(panel, name),
-            on_delete_lineup=lambda name: self._delete_lineup(panel, name)
+            on_delete_lineup=lambda name: self._delete_lineup(panel, name),
+            results_manager=self.results_manager
         )
         self.simulation_panels.append(panel)
 
@@ -221,6 +222,9 @@ class MainDashboard(ttk.Frame):
 
             # Display in results panel
             self.results_panel.display_results(normalized_results)
+
+            # Update visuals panel with charts
+            simulation_panel.set_result_data(normalized_results)
 
     def _normalize_results(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """
