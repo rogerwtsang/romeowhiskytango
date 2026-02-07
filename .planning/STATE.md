@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-10)
 ## Current Position
 
 Phase: 5 of 7 (Workflow Polish)
-Plan: 3 of 3 (Lineup Treeview) - COMPLETE
+Plan: 4 of 4 (Team/Roster/Lineup Hierarchy) - COMPLETE
 Status: Phase complete
-Last activity: 2026-02-07 — Completed 05-03-PLAN.md (lineup treeview with year selection)
+Last activity: 2026-02-07 — Completed 05-04-PLAN.md (Team/Roster/Lineup hierarchy)
 
-Progress: ████████████████████ 100% (20/20 plans across phases)
+Progress: ████████████████████ 100% (21/21 plans across phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: 3.0 min
-- Total execution time: 0.85 hours
+- Total execution time: 0.9 hours
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: ████████████████████ 100% (20/
 | 03-gui-foundation | 7/7 | 25 min | 3.6 min |
 | 03.1-cleanup-planning-docs | 1/1 | 2.3 min | 2.3 min |
 | 04-results-visualization | 4/4 | 15 min | 3.75 min |
-| 05-workflow-polish | 3/3 | 9 min | 3 min |
+| 05-workflow-polish | 4/4 | 13 min | 3.25 min |
 
 **Recent Trend:**
-- Last 3 plans: 3 min, 3 min, 3 min
-- Trend: Consistent 3-minute pace for workflow polish
+- Last 3 plans: 3 min, 3 min, 4 min
+- Trend: Consistent 3-4 minute pace for workflow polish
 
 ## Accumulated Context
 
@@ -105,6 +105,9 @@ Recent decisions affecting current work:
 - Mouse event bindings for drag-drop (not experimental tkinter.dnd)
 - INSERT behavior on drag-drop: target position, others shift (not swap)
 - Typical slot column shows '--' when games_by_slot data unavailable
+- Combobox dropdown for lineup navigation (simple MVP over tree view)
+- Store lineups in {team}_{season}.json files for organization
+- Show team display name in simulation panel title for context
 
 ### Roadmap Evolution
 
@@ -127,6 +130,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-07 21:02:13
-Stopped at: Completed 05-03-PLAN.md (lineup treeview with year selection)
+Last session: 2026-02-07 21:15:00
+Stopped at: Completed 05-04-PLAN.md (Team/Roster/Lineup hierarchy)
 Resume file: None
