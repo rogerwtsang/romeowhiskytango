@@ -1,29 +1,30 @@
 # ============================================================================
 # src/gui/dashboard/results_panel.py
 # ============================================================================
-"""Results panel widget for displaying simulation results."""
+"""Results panel widget for displaying simulation results.
+
+Note: Histogram and Player Contributions charts have been moved to VisualsPanel
+(05-05-PLAN). This panel now focuses on summary statistics only.
+"""
 
 import tkinter as tk
 from tkinter import ttk
 from typing import Optional, Dict, Any
-import matplotlib
-matplotlib.use('TkAgg')
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 
 from src.gui.utils.results_manager import ResultsManager
-from src.gui.utils.chart_utils import create_histogram_with_kde
 from src.gui.widgets.collapsible_frame import CollapsibleFrame
-from src.gui.widgets import PlayerContributionChart
 
 
 class ResultsPanel(ttk.Frame):
-    """Panel displaying simulation results with summary and detailed charts.
+    """Panel displaying simulation results summary statistics.
 
     Provides always-visible summary metrics (mean runs, standard deviation,
     confidence interval, iterations) and a collapsible details section with
-    histogram and additional statistics.
+    additional statistics.
+
+    Note: Histogram and Player Contributions charts have been moved to VisualsPanel
+    (05-05-PLAN) for consolidated visualization.
 
     Usage:
         panel = ResultsPanel(parent, results_manager=results_mgr)
@@ -143,11 +144,15 @@ class ResultsPanel(ttk.Frame):
         self.risp_label.grid(row=6, column=1, sticky='w', padx=5, pady=2)
 
     def _create_details_section(self):
-        """Create collapsible detailed results section."""
+        """Create collapsible detailed results section.
+
+        Note: Histogram and Player Contributions have moved to VisualsPanel.
+        This section now contains only Additional Statistics.
+        """
         # CollapsibleFrame for details (initially collapsed)
         self.details_frame = CollapsibleFrame(
             self,
-            text="Detailed Results & Charts"
+            text="Additional Statistics"
         )
         self.details_frame.grid(row=2, column=0, sticky='nsew', padx=10, pady=5)
 
@@ -160,11 +165,9 @@ class ResultsPanel(ttk.Frame):
         # Configure content layout
         content.columnconfigure(0, weight=1)
         content.rowconfigure(0, weight=0)  # Additional stats
-        content.rowconfigure(1, weight=1)  # Histogram
-        content.rowconfigure(2, weight=1)  # Contribution chart
 
         # Additional statistics section
-        stats_frame = ttk.LabelFrame(content, text="Additional Statistics", padding=5)
+        stats_frame = ttk.Frame(content, padding=5)
         stats_frame.grid(row=0, column=0, sticky='ew', padx=5, pady=5)
 
         # Configure 3-column layout for stats
@@ -193,27 +196,6 @@ class ResultsPanel(ttk.Frame):
         ttk.Label(stats_frame, text="75th Percentile:").grid(row=2, column=1, sticky='w', padx=5)
         self.p75_label = ttk.Label(stats_frame, text="--")
         self.p75_label.grid(row=3, column=1, sticky='w', padx=5)
-
-        # Matplotlib histogram section
-        histogram_frame = ttk.LabelFrame(content, text="Distribution Histogram", padding=5)
-        histogram_frame.grid(row=1, column=0, sticky='nsew', padx=5, pady=5)
-
-        # Create matplotlib figure
-        self.figure = Figure(figsize=(8, 5), dpi=100)
-        self.ax = self.figure.add_subplot(111)
-        self.canvas = FigureCanvasTkAgg(self.figure, master=histogram_frame)
-        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-
-        # Initialize with empty plot
-        self._clear_histogram()
-
-        # Player contributions section
-        contributions_frame = ttk.LabelFrame(content, text="Player Contributions", padding=5)
-        contributions_frame.grid(row=2, column=0, sticky='nsew', padx=5, pady=5)
-
-        # Create contribution chart widget (figsize=(5,3) is secondary to histogram)
-        self.contribution_chart = PlayerContributionChart(contributions_frame)
-        self.contribution_chart.pack(fill=tk.BOTH, expand=True)
 
     def display_results(self, result_data: Dict[str, Any]):
         """
@@ -293,16 +275,6 @@ class ResultsPanel(ttk.Frame):
             self.p25_label.config(text=f"{p25_val:.1f}")
             self.p75_label.config(text=f"{p75_val:.1f}")
 
-            # Update histogram
-            self._create_histogram(distribution, mean, median_val)
-        else:
-            self._clear_histogram()
-
-        # Update contribution chart
-        # Extract contribution data if available (will be None until optimizer phase)
-        contribution_data = result_data.get('contributions', None)
-        self.contribution_chart.set_data(contribution_data)
-
     def clear_results(self):
         """Clear all displayed data."""
         self._current_result = None
@@ -325,12 +297,6 @@ class ResultsPanel(ttk.Frame):
         self.p25_label.config(text="--")
         self.p75_label.config(text="--")
 
-        # Clear histogram
-        self._clear_histogram()
-
-        # Clear contribution chart (shows placeholder)
-        self.contribution_chart.set_data(None)
-
     def get_current_result(self) -> Optional[Dict[str, Any]]:
         """
         Get currently displayed result data.
@@ -339,47 +305,3 @@ class ResultsPanel(ttk.Frame):
             Current result dictionary, or None if no results displayed
         """
         return self._current_result
-
-    def _create_histogram(self, distribution, mean: float, median: float):
-        """
-        Create runs distribution histogram with KDE overlay.
-
-        Args:
-            distribution: List/array of season runs values
-            mean: Mean value for vertical line (unused, calculated by chart_utils)
-            median: Median value for vertical line (unused, calculated by chart_utils)
-        """
-        self.ax.clear()
-
-        if not distribution:
-            self._clear_histogram()
-            return
-
-        # Use chart_utils for histogram with KDE overlay
-        # Mean and median are calculated internally by create_histogram_with_kde
-        create_histogram_with_kde(
-            self.ax,
-            distribution,
-            show_mean=True,
-            show_median=True,
-            title='Distribution of Simulated Runs per Season'
-        )
-
-        self.figure.tight_layout()
-        self.canvas.draw()
-
-    def _clear_histogram(self):
-        """Clear histogram and show placeholder text."""
-        self.ax.clear()
-        self.ax.text(
-            0.5, 0.5,
-            'No data to display',
-            ha='center',
-            va='center',
-            transform=self.ax.transAxes,
-            fontsize=12,
-            color='gray'
-        )
-        self.ax.set_xticks([])
-        self.ax.set_yticks([])
-        self.canvas.draw()

@@ -5,9 +5,11 @@
 
 import tkinter as tk
 from tkinter import ttk, simpledialog
-from typing import Optional, Callable, List
+from typing import Optional, Callable, List, Dict, Any
 from src.models.player import Player
 from src.gui.dashboard.lineup_panel import LineupPanel
+from src.gui.widgets.visuals_panel import VisualsPanel
+from src.gui.utils.results_manager import ResultsManager
 
 
 class SimulationPanel(ttk.Frame):
@@ -29,7 +31,8 @@ class SimulationPanel(ttk.Frame):
         on_compare: Optional[Callable[[], None]] = None,
         on_save_lineup: Optional[Callable[[str], None]] = None,
         on_load_lineup: Optional[Callable[[str], None]] = None,
-        on_delete_lineup: Optional[Callable[[str], None]] = None
+        on_delete_lineup: Optional[Callable[[str], None]] = None,
+        results_manager: Optional[ResultsManager] = None
     ):
         """
         Initialize SimulationPanel.
@@ -41,6 +44,7 @@ class SimulationPanel(ttk.Frame):
             on_save_lineup: Callback for Save Lineup button, receives lineup name
             on_load_lineup: Callback for Load Lineup button, receives lineup name
             on_delete_lineup: Callback for Delete Lineup, receives lineup name
+            results_manager: Optional ResultsManager for visuals panel
         """
         super().__init__(parent, padding=10)
 
@@ -49,10 +53,12 @@ class SimulationPanel(ttk.Frame):
         self.on_save_lineup = on_save_lineup
         self.on_load_lineup = on_load_lineup
         self.on_delete_lineup = on_delete_lineup
+        self.results_manager = results_manager
 
         # State
         self.current_tab = 'lineup'  # 'lineup' or 'visuals'
         self.lineup_panel: Optional[LineupPanel] = None
+        self.visuals_panel: Optional[VisualsPanel] = None
         self._lineup_names: List[str] = []
 
         # Configure grid
@@ -176,17 +182,12 @@ class SimulationPanel(ttk.Frame):
         )
         self.lineup_panel.grid(row=0, column=0, sticky='nsew')
 
-        # Create Visuals tab (placeholder for future implementation)
-        self.visuals_panel = ttk.Frame(self.content_frame)
+        # Create Visuals tab with actual VisualsPanel
+        self.visuals_panel = VisualsPanel(
+            self.content_frame,
+            results_manager=self.results_manager
+        )
         self.visuals_panel.grid(row=0, column=0, sticky='nsew')
-
-        # Placeholder content for Visuals tab
-        ttk.Label(
-            self.visuals_panel,
-            text="Visuals Tab - Coming Soon",
-            font=('TkDefaultFont', 12, 'italic'),
-            foreground='gray'
-        ).pack(expand=True)
 
         # Initially show lineup tab
         self._show_tab('lineup')
@@ -326,7 +327,7 @@ class SimulationPanel(ttk.Frame):
 
     def load_roster_data(self, roster: List[Player], team_data):
         """
-        Load roster data into LineupPanel.
+        Load roster data into LineupPanel and VisualsPanel.
 
         Args:
             roster: List of Player objects
@@ -334,3 +335,25 @@ class SimulationPanel(ttk.Frame):
         """
         if self.lineup_panel:
             self.lineup_panel.lineup_builder.load_data(roster, team_data)
+        if self.visuals_panel:
+            self.visuals_panel.set_roster(roster)
+
+    def set_result_data(self, result_data: Dict[str, Any]):
+        """
+        Set result data for VisualsPanel charts.
+
+        Args:
+            result_data: Normalized results dictionary with standard keys
+        """
+        if self.visuals_panel:
+            self.visuals_panel.set_result_data(result_data)
+
+    def set_roster(self, roster: List[Player]):
+        """
+        Set roster for VisualsPanel radar chart.
+
+        Args:
+            roster: List of Player objects
+        """
+        if self.visuals_panel:
+            self.visuals_panel.set_roster(roster)

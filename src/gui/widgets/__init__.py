@@ -11,6 +11,7 @@ from .comparison_table import ComparisonTable
 from .player_contribution_chart import PlayerContributionChart
 from .optimization_preview import LineupRankingList, LineupDiffView
 from .seed_control import SeedControl
+from .visuals_panel import VisualsPanel
 
 __all__ = [
     'CollapsibleFrame',
@@ -25,4 +26,5 @@ __all__ = [
     'LineupRankingList',
     'LineupDiffView',
     'SeedControl',
+    'VisualsPanel',
 ]
