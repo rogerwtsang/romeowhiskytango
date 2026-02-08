@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="270mm" height="210mm" version="1.1" viewBox="0 0 270 210" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <g fill="#81b4fe" stroke="#05285b">
+   <rect x="4.9325" y="5.2848" width="63.418" height="48.62" stroke-width=".8"/>
+   <rect x="4.867" y="57.363" width="63.549" height="49.104" stroke-width=".669"/>
+   <rect x="4.9464" y="109.23" width="63.39" height="93.337" stroke-width=".8278"/>
+  </g>
+  <rect x="61.656" y="114.5" width="2.8186" height="81.738" fill="#05285b" stroke="#05285b" stroke-width=".8"/>
+  <g fill="#81b4fe" stroke="#05285b">
+   <rect x="71.169" y="4.9325" width="194.48" height="198" stroke-width=".8"/>
+   <rect x="74.143" y="155.96" width="107.03" height="42.134" stroke-width=".75903"/>
+   <rect x="189.21" y="156.35" width="72.137" height="41.646" stroke-width=".54531"/>
+   <rect x="72.528" y="6.3206" width="187.01" height="146.76" stroke-width=".87135"/>
+   <text x="8.6318502" y="11.802733" font-size="4.9389px" stroke-width=".8" xml:space="preserve"><tspan x="8.6318502" y="11.802733" font-family="'Noto Sans'" font-size="4.9389px" font-weight="100" stroke="#ffc107" stroke-width=".8" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">Team configuration</tspan></text>
+  </g>
+  <text x="7.5748887" y="65.00312" fill="#073984" font-family="'Noto Sans'" font-size="4.9389px" font-weight="100" stroke="#05285b" stroke-width=".8" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="7.5748887" y="65.00312" fill="#cbbbe9" stroke="#ffc107" stroke-width=".8">Simulation parameters</tspan></text>
+  <g fill="#cbbbe9" font-family="'Noto Sans'" font-weight="100" stroke="#ffc107">
+   <text x="7.9272094" y="118.73198" font-size="4.9389px" stroke-width=".8" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="7.9272094" y="118.73198" stroke-width=".8">Assumptions</tspan></text>
+   <text transform="scale(.96841 1.0326)" x="77.993073" y="15.067159" font-size="8.4667px" stroke-width="1.0197" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="77.993073" y="15.067159" font-family="'Noto Sans'" font-size="8.4667px" font-weight="normal" stroke-width="1.0197">Simulation</tspan></text>
+   <g stroke-width=".8">
+    <text x="76.088692" y="162.35733" font-size="4.9389px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="76.088692" y="162.35733" stroke-width=".8">Summary</tspan></text>
+    <text x="192.32761" y="163.47171" font-size="4.9389px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="192.32761" y="163.47171" stroke-width=".8">Additional Statistics</tspan></text>
+    <text x="125.31146" y="16.940716" font-size="5.6444px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="125.31146" y="16.940716" stroke-width=".8">Lineup</tspan></text>
+    <text x="147.733" y="17.937227" font-size="5.6444px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="147.733" y="17.937227" stroke-width=".8">Visuals</tspan></text>
+   </g>
+  </g>
+  <g stroke="#ffc107" stroke-width=".8">
+   <rect x="180.37" y="8.7195" width="54.061" height="12.456" fill="#05285b"/>
+   <text x="183.60744" y="17.438971" fill="#cbbbe9" font-family="'Noto Sans'" font-size="5.6444px" font-weight="100" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="183.60744" y="17.438971" stroke-width=".8">RUN SIMULTATION</tspan></text>
+  </g>
+  <g fill="none" stroke="#4f1319">
+   <rect x="120.08" y="7.9412" width="48.58" height="13.951" stroke-width=".8"/>
+   <rect x="73.783" y="21.965" width="184.27" height="128.97" stroke-width=".88272"/>
+   <path d="m144.49 7.9721-0.24913 13.453" stroke-width=".8"/>
+  </g>
+ </g>
+</svg>
