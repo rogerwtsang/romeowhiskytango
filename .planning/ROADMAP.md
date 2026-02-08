@@ -15,7 +15,7 @@ None
 - [x] **Phase 3: GUI Foundation** - Consolidate 9 tabs into focused dashboard structure
 - [x] **Phase 3.1: Cleanup Planning Docs** - Clean up stray/orphan documents, consolidate and recommend removals (INSERTED)
 - [x] **Phase 4: Results Visualization** - Charts and metrics that communicate at a glance
-- [ ] **Phase 5: Workflow Polish** - Reduce clicks, clean visual hierarchy
+- [x] **Phase 5: Workflow Polish** - Reduce clicks, clean visual hierarchy
 - [ ] **Phase 6: Test Coverage** - Implement 19 stubs + integration tests
 - [ ] **Phase 7: Season W/L Simulation** - Extend to season-level win/loss predictions (DEFERRED - researched ahead)
 
@@ -94,11 +94,11 @@ Focus:
 - Comprehensive Visuals tab with radar, overlay, run expectancy charts
 
 Plans:
-- [ ] 05-01-PLAN.md — Window sizing, seed control, simulation defaults
-- [ ] 05-02-PLAN.md — Assumptions section enhancement with explanations
-- [ ] 05-03-PLAN.md — Lineup panel redesign with Treeview and drag-and-drop
-- [ ] 05-04-PLAN.md — Team/Roster/Lineup data hierarchy and persistence
-- [ ] 05-05-PLAN.md — Visuals tab with radar, overlay, and run expectancy charts
+- [x] 05-01-PLAN.md — Window sizing, seed control, simulation defaults
+- [x] 05-02-PLAN.md — Assumptions section enhancement with explanations
+- [x] 05-03-PLAN.md — Lineup panel redesign with Treeview and drag-and-drop
+- [x] 05-04-PLAN.md — Team/Roster/Lineup data hierarchy and persistence
+- [x] 05-05-PLAN.md — Visuals tab with radar, overlay, and run expectancy charts
 
 ### Phase 6: Test Coverage
 **Goal**: Comprehensive test suite for simulation pipeline
@@ -130,6 +130,6 @@ Plans:
 | 3. GUI Foundation | 7/7 | ✓ Complete | 2026-02-06 |
 | 3.1 Cleanup Planning Docs | 1/1 | ✓ Complete | 2026-01-25 |
 | 4. Results Visualization | 4/4 | ✓ Complete | 2026-02-07 |
-| 5. Workflow Polish | 0/5 | Not started | - |
+| 5. Workflow Polish | 5/5 | ✓ Complete | 2026-02-07 |
 | 6. Test Coverage | 0/TBD | Not started | - |
 | 7. Season W/L Simulation | 0/1 | Deferred (researched ahead) | - |
